@@ -1,5 +1,3 @@
-using Blog.Domain.AggregatesModel.BlogAggregate;
-
 namespace Blog.Api.UseCases.Blog;
 
 public record BlogDto(string Title, string Description, string Poster, string Content, BlogStatus Status)

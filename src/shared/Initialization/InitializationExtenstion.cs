@@ -6,7 +6,7 @@ namespace Shared.Initialization;
 
 public static class InitializationExtenstion
 {
-    public static void AddInitializationStages(this IServiceCollection services)
+    public static IServiceCollection AddInitializationStages(this IServiceCollection services)
     {
         AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(assembly =>
@@ -14,5 +14,6 @@ public static class InitializationExtenstion
                     .Where(t => typeof(IStage).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract))
             .ToList()
             .ForEach(stage => { services.AddTransient(typeof(IStage), stage); });
+        return services;
     }
 }

@@ -5,14 +5,14 @@ namespace Blog.Api.UseCases.Blog;
 
 public struct MutateBlog
 {
-    public record GetQueries : IQueries
+    public record GetListBlogQueries : IQueries
     {
         public int Page { get; init; }
         public int PageSize { get; init; }
         public string? Query { get; init; }
     }
 
-    public record GetQuery : IQuery
+    public record GetBlogQuery : IQuery
     {
         public Guid Id { get; init; }
 
@@ -28,7 +28,7 @@ public struct MutateBlog
 
             public override Expression<Func<BlogEntity, bool>> Criteria => x => x.Id == _id;
 
-            internal class GetValidator : AbstractValidator<GetQuery>
+            internal class GetValidator : AbstractValidator<GetBlogQuery>
             {
                 public GetValidator()
                 {
@@ -40,7 +40,7 @@ public struct MutateBlog
         }
     }
 
-    public record CreateCommand : ICreateCommand
+    public record CreateBlogCommand : ICreateCommand
     {
         public string Title { get; init; }
         public string Description { get; init; }
@@ -53,7 +53,7 @@ public struct MutateBlog
             return new BlogEntity(Title, Description, Poster, Content, Status);
         }
 
-        internal class Validator : AbstractValidator<CreateCommand>
+        internal class Validator : AbstractValidator<CreateBlogCommand>
         {
             public Validator()
             {
@@ -64,7 +64,7 @@ public struct MutateBlog
         }
     }
 
-    public record UpdateCommand : IUpdateCommand<Guid>
+    public record UpdateBlogCommand : IUpdateCommand<Guid>
     {
         public Guid Id { get; init; }
         public string Title { get; init; }
@@ -73,7 +73,7 @@ public struct MutateBlog
         public string Content { get; init; }
         public BlogStatus Status { get; init; }
 
-        internal class Validator : AbstractValidator<UpdateCommand>
+        internal class Validator : AbstractValidator<UpdateBlogCommand>
         {
             public Validator()
             {
@@ -89,10 +89,10 @@ public struct MutateBlog
     }
 
     internal class Handler :
-        IRequestHandler<GetQueries, IResult>,
-        IRequestHandler<GetQuery, IResult>,
-        IRequestHandler<CreateCommand, IResult>,
-        IRequestHandler<UpdateCommand, IResult>
+        IRequestHandler<GetListBlogQueries, IResult>,
+        IRequestHandler<GetBlogQuery, IResult>,
+        IRequestHandler<CreateBlogCommand, IResult>,
+        IRequestHandler<UpdateBlogCommand, IResult>
     {
         private readonly IBlogRepository _blogRepository;
 
@@ -101,20 +101,23 @@ public struct MutateBlog
             _blogRepository = blogRepository;
         }
 
-        public async Task<IResult> Handle(GetQueries request, CancellationToken cancellationToken)
+        public async Task<IResult> Handle(GetListBlogQueries request, CancellationToken cancellationToken)
         {
-            var queryable = _blogRepository
+            var queryable = await _blogRepository
                 .FindAll(x => string.IsNullOrEmpty(request.Query)
                               || EF.Functions.ILike(x.Title, $"%{request.Query}%")
                 )
-                .OrderByDescending(x => x.CreatedDate);
-            var blogQueryable =
-                queryable.Select(x => new BlogDto(x.Title, x.Description, x.Poster, x.Content, x.Status));
-            var blogModels = await blogQueryable.ToQueryResultAsync(request.Page, request.PageSize);
+                .OrderByDescending(x => x.CreatedDate).ToQueryResultAsync(request.Page, request.PageSize);
+            var blogModels = new QueryResult<BlogDto>()
+            {
+                Count = queryable.Count,
+                Items = queryable.Items.Select(x => new BlogDto(x.Title, x.Description, x.Poster, x.Content, x.Status))
+                    .ToList()
+            };
             return Results.Ok(ResultModel<QueryResult<BlogDto>>.Create(blogModels));
         }
 
-        public async Task<IResult> Handle(GetQuery request, CancellationToken cancellationToken)
+        public async Task<IResult> Handle(GetBlogQuery request, CancellationToken cancellationToken)
         {
             var item = await _blogRepository.GetByIdAsync(request.Id);
             if (item is null)
@@ -123,7 +126,7 @@ public struct MutateBlog
             }
 
             var result = new BlogDto(item.Title, item.Description, item.Poster, item.Content, item.Status);
-            if (item.BlogTags.Count > 0)
+            if ( item.BlogTags is { Count: > 0 })
             {
                 result.AssignTagNames(item.BlogTags);
             }
@@ -131,21 +134,22 @@ public struct MutateBlog
             return Results.Ok(ResultModel<BlogDto>.Create(result));
         }
 
-        public async Task<IResult> Handle(CreateCommand request, CancellationToken cancellationToken)
+        public async Task<IResult> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
         {
             var blogEntity = request.ToBlogEntity();
             _blogRepository.Add(blogEntity);
             await _blogRepository.CommitAsync();
             return Results.Ok();
         }
-        
-        public async Task<IResult> Handle(UpdateCommand request, CancellationToken cancellationToken)
+
+        public async Task<IResult> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
         {
             var item = await _blogRepository.GetByIdAsync(request.Id);
             if (item is null)
             {
                 throw new Exception($"Couldn't find entity with id={request.Id}");
             }
+
             item.Update(request.Title, request.Description, request.Poster, request.Content, request.Status);
             _blogRepository.Update(item);
             await _blogRepository.CommitAsync();

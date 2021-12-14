@@ -32,7 +32,7 @@ public static class QueryResultExtension
     {
         return new QueryResult<T>
         {
-            Count = await queryable?.CountAsync(),
+            Count = await queryable?.CountAsync()!,
             Items = await queryable?.Skip(skip)?.Take(take)?.ToListAsync()
         };
     }

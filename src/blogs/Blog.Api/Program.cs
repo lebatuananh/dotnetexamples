@@ -1,4 +1,5 @@
 using Blog.Api;
+using Microsoft.OpenApi.Models;
 using BlogEntity = Blog.Domain.AggregatesModel.BlogAggregate.Blog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,12 +8,25 @@ builder.Host.AddSerilog("Blogs");
 builder.Services
     .AddCustomCors()
     .AddHttpContextAccessor()
-    .AddCustomValidators(new[] { typeof(BlogEntity), typeof(BlogTag), typeof(Tag) })
-    .AddCustomValidators(new[] { typeof(BlogEntity), typeof(BlogTag), typeof(Tag) })
-    .AddSwaggerGen()
+    .AddCustomMediatR(new[] { typeof(Anchor) })
+    .AddCustomValidators(new[] { typeof(Anchor) })
+    .AddSwaggerGen(setup =>
+    {
+        setup.SwaggerDoc("v1", new OpenApiInfo()
+            {
+                Description = "Blog web api implementation using Minimal Api in Asp.Net Core",
+                Title = "Blog Api",
+                Version = "v1",
+                Contact = new OpenApiContact()
+                {
+                    Name = "MRA",
+                    Url = new Uri("http://netcoreexamples.com")
+                }
+            });})
     .AddPersistence(builder.Configuration)
     .AddRepository()
     .AddEndpointsApiExplorer()
+    .AddInitializationStages()
     .AddControllers();
 
 var app = builder.Build();

@@ -1,0 +1,21 @@
+version: '3.4'
+
+services:
+#####################################
+# Postgres
+#####################################
+  postgresql:
+    container_name: postgres_example
+    image: postgres:11
+    environment:
+      POSTGRES_PASSWORD: Mramra1234!@
+    ports:
+      - 5436:5432
+    volumes:
+      - blog-data:/var/lib/postgresql/data
+    command: postgres -N 500
+
+
+volumes:
+  blog-data:
+    external: true    
