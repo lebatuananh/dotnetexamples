@@ -1,0 +1,32 @@
+<Project>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Using Include="Shared.SeedWork"/>
+        <Using Include="Shared.Specification"/>
+        <Using Include="Shared.Repositories"/>
+        <Using Include="Shared.Constants"/>
+        <Using Include="Shared.Initialization"/>
+        <Using Include="Shared.SeriLog.Extensions" Static="true" />
+        <Using Include="Shared.SeriLog"/>
+        <Using Include="Shared.Controller"/>
+        <Using Include="Shared"/>
+        
+        <Using Include="Blog.Domain.AggregatesModel.BlogAggregate"/>
+        <Using Include="Blog.Domain.AggregatesModel.TagAggregate"/>
+        
+        <Using Include="FluentValidation"/>
+        <Using Include="MediatR"/>
+        <Using Include="Microsoft.AspNetCore.Mvc" />
+        <Using Include="Microsoft.EntityFrameworkCore" />
+    </ItemGroup>
+</Project>
