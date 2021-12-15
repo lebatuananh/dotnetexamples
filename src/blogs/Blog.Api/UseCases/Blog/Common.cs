@@ -1,6 +1,7 @@
 namespace Blog.Api.UseCases.Blog;
 
-public record BlogDto(string Title, string Description, string Poster, string Content, BlogStatus Status)
+public record BlogDto(Guid Id, string Title, string Description, string Poster, string Content, BlogStatus Status,
+    DateTimeOffset CreatedDate, DateTimeOffset LastUpdatedDate)
 {
     public List<BlogTagDto> BlogTagDtos { get; set; }
 

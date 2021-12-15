@@ -20,6 +20,7 @@
         <Using Include="Shared.SeriLog"/>
         <Using Include="Shared.Controller"/>
         <Using Include="Shared"/>
+        <Using Include="Shared.Identity"/>
         
         <Using Include="Blog.Domain.AggregatesModel.BlogAggregate"/>
         <Using Include="Blog.Domain.AggregatesModel.TagAggregate"/>
@@ -28,5 +29,6 @@
         <Using Include="MediatR"/>
         <Using Include="Microsoft.AspNetCore.Mvc" />
         <Using Include="Microsoft.EntityFrameworkCore" />
+        <Using Include="Microsoft.OpenApi.Models" />
     </ItemGroup>
 </Project>

@@ -19,4 +19,8 @@
       <Folder Include="Data" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
+    </ItemGroup>
+
 </Project>

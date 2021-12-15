@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+
+#####################################
+# Postgres
+#####################################
+  postgresql:
+    ports:
+      - 5436:5432  
+    networks:
+      - netcore-example 
+
+#####################################
+# Blog Api
+#####################################
+  netcorexamples.blogapi:
+    env_file:
+      - ./resources/env  
+    ports:
+      - "5400:80"
+    networks:
+      - netcore-example
+
+networks:
+  netcore-example:
+    external: true 

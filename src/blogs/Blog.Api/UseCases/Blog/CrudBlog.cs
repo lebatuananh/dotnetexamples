@@ -111,7 +111,9 @@ public struct MutateBlog
             var blogModels = new QueryResult<BlogDto>()
             {
                 Count = queryable.Count,
-                Items = queryable.Items.Select(x => new BlogDto(x.Title, x.Description, x.Poster, x.Content, x.Status))
+                Items = queryable.Items
+                    .Select(x => new BlogDto(x.Id, x.Title, x.Description, x.Poster, x.Content, x.Status, x.CreatedDate,
+                        x.LastUpdatedDate))
                     .ToList()
             };
             return Results.Ok(ResultModel<QueryResult<BlogDto>>.Create(blogModels));
@@ -125,8 +127,10 @@ public struct MutateBlog
                 throw new Exception($"Couldn't find item={request.Id}");
             }
 
-            var result = new BlogDto(item.Title, item.Description, item.Poster, item.Content, item.Status);
-            if ( item.BlogTags is { Count: > 0 })
+            var result = new BlogDto(item.Id, item.Title, item.Description, item.Poster, item.Content, item.Status,
+                item.CreatedDate,
+                item.LastUpdatedDate);
+            if (item.BlogTags is { Count: > 0 })
             {
                 result.AssignTagNames(item.BlogTags);
             }

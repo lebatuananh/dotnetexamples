@@ -10,19 +10,9 @@ builder.Services
     .AddHttpContextAccessor()
     .AddCustomMediatR(new[] { typeof(Anchor) })
     .AddCustomValidators(new[] { typeof(Anchor) })
-    .AddSwaggerGen(setup =>
-    {
-        setup.SwaggerDoc("v1", new OpenApiInfo()
-            {
-                Description = "Blog web api implementation using Minimal Api in Asp.Net Core",
-                Title = "Blog Api",
-                Version = "v1",
-                Contact = new OpenApiContact()
-                {
-                    Name = "MRA",
-                    Url = new Uri("http://netcoreexamples.com")
-                }
-            });})
+    .AddAuthenticationCustom(builder.Configuration)
+    .AddAuthorizationPolicies(builder.Configuration)
+    .AddSwaggerConfig(builder.Configuration)
     .AddPersistence(builder.Configuration)
     .AddRepository()
     .AddEndpointsApiExplorer()
@@ -39,10 +29,17 @@ app.MapGet("/error", () => Results.Problem("An error occurred.", statusCode: 500
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseCustomCors();
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.OAuthClientId("blog_admin_api_swaggerui");
+    c.OAuthAppName("BlogApi");
+    c.OAuthUsePkce();
+});
 app.MapFallback(() => Results.Redirect("/swagger"));
-app.UseController();
+app.UseEndpoint();
 await WithSeriLog(() =>
 {
     app.AutoInit().Run();

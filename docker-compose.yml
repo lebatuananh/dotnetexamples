@@ -9,11 +9,19 @@ services:
     image: postgres:11
     environment:
       POSTGRES_PASSWORD: Mramra1234!@
-    ports:
-      - 5436:5432
     volumes:
       - blog-data:/var/lib/postgresql/data
     command: postgres -N 500
+
+#####################################
+# Blog Api
+#####################################
+  netcorexamples.blogapi:
+    container_name: netcorexamples_blogapi
+    image: netcorexamples_blogapi
+    build:
+      context: .
+      dockerfile: src/blogs/Blog.Api/Dockerfile        
 
 
 volumes:
