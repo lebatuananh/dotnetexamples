@@ -20,4 +20,4 @@ jobs:
     - name: build
       run: docker build . --file src/blogs/Blog.Api/Dockerfile --tag lebatuananh/netcoreexamplesblogapi
     - name: publish
-      run: docker push docker.io/lebatuananh/netcoreexamplesblogapi
+      run: docker push lebatuananh/netcoreexamplesblogapi:latest
