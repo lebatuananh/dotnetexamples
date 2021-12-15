@@ -130,12 +130,12 @@ public static class Extension
         #region BlogController
 
         app.MapGet("api/v1/blogs",
-                async ([FromQuery] int page, int pageSize, string? queries, ISender sender) =>
+                async ([FromQuery] int skip, int take, string? query, ISender sender) =>
                     await sender.Send(new MutateBlog.GetListBlogQueries
                     {
-                        Page = page,
-                        Query = queries,
-                        PageSize = pageSize
+                        Skip = skip,
+                        Query = query,
+                        Take = take
                     }))
             .Produces(200, typeof(ResultModel<QueryResult<BlogDto>>))
             .WithTags("Blogs")
@@ -180,12 +180,12 @@ public static class Extension
         #region TagController
 
         app.MapGet("api/v1/tags",
-            async ([FromQuery] int page, int pageSize, string? queries, ISender sender) =>
+            async ([FromQuery] int skip, int take, string? query, ISender sender) =>
                 await sender.Send(new MutateTag.GetListTagQueries
                 {
-                    Page = page,
-                    Query = queries,
-                    PageSize = pageSize
+                    Skip = skip,
+                    Query = query,
+                    Take = take
                 })).Produces(200, typeof(ResultModel<QueryResult<TagDto>>)).WithTags("Tags").ProducesProblem(404);
         app.MapPost("api/v1/tags",
             [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]

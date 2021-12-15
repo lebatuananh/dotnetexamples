@@ -6,8 +6,8 @@ public struct MutateTag
 {
     public record GetListTagQueries : IQueries
     {
-        public int Page { get; init; }
-        public int PageSize { get; init; }
+        public int Skip { get; init; }
+        public int Take { get; init; }
         public string? Query { get; init; }
     }
 
@@ -100,11 +100,11 @@ public struct MutateTag
                 .FindAll(x => string.IsNullOrEmpty(request.Query)
                               || EF.Functions.ILike(x.Name, $"%{request.Query}%")
                 )
-                .OrderByDescending(x => x.CreatedDate).ToQueryResultAsync(request.Page, request.PageSize);
+                .OrderByDescending(x => x.CreatedDate).ToQueryResultAsync(request.Skip, request.Take);
             var tagModels = new QueryResult<TagDto>()
             {
                 Count = queryable.Count,
-                Items = queryable.Items.Select(x => new TagDto(x.Id, x.Name))
+                Items = queryable.Items.Select(x => new TagDto(x.Id, x.Name, x.CreatedDate, x.LastUpdatedDate))
                     .ToList()
             };
             return Results.Ok(ResultModel<QueryResult<TagDto>>.Create(tagModels));
@@ -118,7 +118,7 @@ public struct MutateTag
                 throw new Exception($"Couldn't find item={request.Id}");
             }
 
-            var result = new TagDto(item.Id, item.Name);
+            var result = new TagDto(item.Id, item.Name, item.CreatedDate, item.LastUpdatedDate);
 
             return Results.Ok(ResultModel<TagDto>.Create(result));
         }

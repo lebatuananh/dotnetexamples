@@ -20,4 +20,6 @@ volumes:
 
 ```shell
 docker volume create --name=blog-data
+docker network create netcore-example
+docker-compose up -d
 ```

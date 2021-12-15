@@ -7,8 +7,8 @@ public struct MutateBlog
 {
     public record GetListBlogQueries : IQueries
     {
-        public int Page { get; init; }
-        public int PageSize { get; init; }
+        public int Skip { get; init; }
+        public int Take { get; init; }
         public string? Query { get; init; }
     }
 
@@ -107,7 +107,7 @@ public struct MutateBlog
                 .FindAll(x => string.IsNullOrEmpty(request.Query)
                               || EF.Functions.ILike(x.Title, $"%{request.Query}%")
                 )
-                .OrderByDescending(x => x.CreatedDate).ToQueryResultAsync(request.Page, request.PageSize);
+                .OrderByDescending(x => x.CreatedDate).ToQueryResultAsync(request.Skip, request.Take);
             var blogModels = new QueryResult<BlogDto>()
             {
                 Count = queryable.Count,

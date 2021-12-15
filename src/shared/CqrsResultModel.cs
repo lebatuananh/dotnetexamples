@@ -36,8 +36,8 @@ public interface ITxRequest
 
 public interface IQueries: IQuery
 {
-    public int Page { get; init; }
-    public int PageSize { get; init; }
+    public int Skip { get; init; }
+    public int Take { get; init; }
     public string? Query { get; init; }
 }
 
