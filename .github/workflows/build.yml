@@ -18,6 +18,6 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     - name: build
-      run: docker build . --file src/blogs/Blog.Api/Dockerfile --tag  lebatuananh/netcoreexamplesblogapi
+      run: docker build . --file src/blogs/Blog.Api/Dockerfile --tag lebatuananh/netcoreexamplesblogapi
     - name: publish
-      run: docker push lebatuananh/netcoreexamplesblogapi
+      run: docker push docker.io/lebatuananh/netcoreexamplesblogapi
