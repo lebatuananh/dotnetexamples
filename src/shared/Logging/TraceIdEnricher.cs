@@ -7,8 +7,8 @@ namespace Shared.Logging;
 
 internal class TraceIdEnricher : ILogEventEnricher
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     public const string DefaultPropertyName = "TraceId";
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     private readonly string _traceIdName;
 

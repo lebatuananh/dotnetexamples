@@ -21,7 +21,18 @@ services:
       - "5400:80"
     networks:
       - netcore-example
+      
+#####################################
+# FileMangement
+#####################################
+  netcorexamples.filemangement:
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+        - "5401:80"
+    networks:
+        - netcore-example      
 
 networks:
   netcore-example:
-    external: true 
+    external: true

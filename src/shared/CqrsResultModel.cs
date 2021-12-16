@@ -34,7 +34,7 @@ public interface ITxRequest
 {
 }
 
-public interface IQueries: IQuery
+public interface IQueries : IQuery
 {
     public int Skip { get; init; }
     public int Take { get; init; }

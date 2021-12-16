@@ -13,7 +13,7 @@ public class BlogTagEntityConfiguration : IEntityTypeConfiguration<BlogTag>
         builder.Property(x => x.TagName).IsRequired().HasMaxLength(30);
         builder
             .HasOne(x => x.Blog)
-            .WithMany(t=>t.BlogTags)
+            .WithMany(t => t.BlogTags)
             .HasForeignKey(x => x.BlogId)
             .OnDelete(DeleteBehavior.Cascade);
 

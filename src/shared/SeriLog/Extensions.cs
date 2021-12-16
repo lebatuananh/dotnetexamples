@@ -3,38 +3,37 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 
-namespace Shared.SeriLog
+namespace Shared.SeriLog;
+
+public static class Extensions
 {
-    public static class Extensions
+    public static async Task WithSeriLog(Func<ValueTask> func)
     {
-        public static async Task WithSeriLog(Func<ValueTask> func)
-        {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .CreateBootstrapLogger();
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateBootstrapLogger();
 
-            try
-            {
-                await func.Invoke();
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Unhandled exception");
-            }
-            finally
-            {
-                Log.Information("Shut down complete");
-                Log.CloseAndFlush();
-            }
-        }
-
-        public static void AddSerilog(this ConfigureHostBuilder hostBuilder, string appName)
+        try
         {
-            hostBuilder.UseSerilog((ctx, lc) => lc
-                .WriteTo.Console()
-                .Enrich.FromLogContext()
-                .Enrich.WithProperty("Application", appName)
-                .ReadFrom.Configuration(ctx.Configuration));
+            await func.Invoke();
         }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Unhandled exception");
+        }
+        finally
+        {
+            Log.Information("Shut down complete");
+            Log.CloseAndFlush();
+        }
+    }
+
+    public static void AddSerilog(this ConfigureHostBuilder hostBuilder, string appName)
+    {
+        hostBuilder.UseSerilog((ctx, lc) => lc
+            .WriteTo.Console()
+            .Enrich.FromLogContext()
+            .Enrich.WithProperty("Application", appName)
+            .ReadFrom.Configuration(ctx.Configuration));
     }
 }

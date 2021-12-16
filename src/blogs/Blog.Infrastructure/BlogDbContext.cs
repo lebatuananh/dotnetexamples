@@ -12,12 +12,6 @@ namespace Blog.Infrastructure;
 
 public class BlogDbContext : BaseDbContext
 {
-    public static string SchemaName => "blog";
-
-    public virtual DbSet<BlogEntity> Blogs { get; set; }
-    public virtual DbSet<TagEntity> Tags { get; set; }
-    public virtual DbSet<BlogTagEntity> BlogTags { get; set; }
-
     public BlogDbContext(DbContextOptions<BlogDbContext> options, IMediator mediator,
         IScopeContext scopeContext) : base(options, mediator, scopeContext)
     {
@@ -30,7 +24,13 @@ public class BlogDbContext : BaseDbContext
     public BlogDbContext()
     {
     }
-    
+
+    public static string SchemaName => "blog";
+
+    public virtual DbSet<BlogEntity> Blogs { get; set; }
+    public virtual DbSet<TagEntity> Tags { get; set; }
+    public virtual DbSet<BlogTagEntity> BlogTags { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.HasDefaultSchema(SchemaName);

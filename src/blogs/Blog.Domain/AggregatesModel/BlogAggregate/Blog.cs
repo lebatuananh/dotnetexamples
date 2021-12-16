@@ -6,14 +6,6 @@ namespace Blog.Domain.AggregatesModel.BlogAggregate;
 
 public class Blog : ModifierTrackingEntity, IAggregateRoot
 {
-    public string Title { get; private set; }
-    public string Description { get; private set; }
-    public string Poster { get; private set; }
-    public string Content { get; private set; }
-    public BlogStatus Status { get; private set; }
-
-    public virtual ISet<BlogTag> BlogTags { get; private set; }
-
     public Blog(string title, string description, string poster, string content, BlogStatus status)
     {
         Title = title;
@@ -22,6 +14,14 @@ public class Blog : ModifierTrackingEntity, IAggregateRoot
         Content = content;
         Status = status;
     }
+
+    public string Title { get; private set; }
+    public string Description { get; private set; }
+    public string Poster { get; private set; }
+    public string Content { get; private set; }
+    public BlogStatus Status { get; private set; }
+
+    public virtual ISet<BlogTag> BlogTags { get; private set; }
 
     public void Update(string title, string description, string poster, string content, BlogStatus status)
     {

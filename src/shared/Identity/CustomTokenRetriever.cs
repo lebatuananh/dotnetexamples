@@ -12,6 +12,7 @@ public class CustomTokenRetriever
         return request =>
         {
             var token = TokenRetrieval.FromAuthorizationHeader(headerScheme)(request);
+            var test = TokenRetrieval.FromQueryString(queryScheme)(request);
             return !string.IsNullOrEmpty(token) ? token : TokenRetrieval.FromQueryString(queryScheme)(request);
         };
     }

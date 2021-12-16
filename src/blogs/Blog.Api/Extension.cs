@@ -5,6 +5,7 @@ using Blog.Api.UseCases.Tags;
 using Blog.Infrastructure;
 using Blog.Infrastructure.Repositories;
 using IdentityModel;
+using IdentityModel.AspNetCore.AccessTokenValidation;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authorization;
 
@@ -49,6 +50,8 @@ public static class Extension
             options.AddPolicy(AuthorizationConsts.AdministrationPolicy,
                 policy =>
                     policy.RequireAssertion(context => context.User.HasClaim(c =>
+                            c.Type == $"http://schemas.microsoft.com/ws/2008/06/identity/claims/{JwtClaimTypes.Role}" &&
+                            c.Value == adminApiConfiguration.AdministrationRole ||
                             c.Type == JwtClaimTypes.Role && c.Value == adminApiConfiguration.AdministrationRole ||
                             c.Type == $"client_{JwtClaimTypes.Role}" &&
                             c.Value == adminApiConfiguration.AdministrationRole
@@ -63,16 +66,24 @@ public static class Extension
         IConfiguration configuration)
     {
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
-        services
-            .AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-            .AddIdentityServerAuthentication(options =>
+        var settings = configuration.GetSection("Authentication").Get<AuthenticationSettings>();
+        services.AddAuthentication("token")
+
+            // JWT tokens (default scheme)
+            .AddJwtBearer("token", options =>
             {
-                var settings = configuration.GetSection("Authentication").Get<AuthenticationSettings>();
                 options.Authority = settings.Authority;
-                options.RequireHttpsMetadata = settings.RequireHttpsMetadata;
-                options.ApiName = settings.ApiName;
-                options.ApiSecret = settings.ApiSecret;
-                options.TokenRetriever = CustomTokenRetriever.FromHeaderAndQueryString();
+                options.Audience = settings.ApiName;
+                // if token does not contain a dot, it is a reference token
+                options.ForwardDefaultSelector = Selector.ForwardReferenceToken("introspection");
+            })
+
+            // reference tokens
+            .AddOAuth2Introspection("introspection", options =>
+            {
+                options.Authority = settings.Authority;
+                options.ClientId = settings.ApiName;
+                options.ClientSecret = settings.ApiSecret;
             });
         return services;
     }
@@ -83,12 +94,12 @@ public static class Extension
         var settings = configuration.GetSection("Authentication").Get<AuthenticationSettings>();
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo()
+            c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Description = "Blog web api implementation using Minimal Api in Asp.Net Core",
                 Title = "Blog Api",
                 Version = "v1",
-                Contact = new OpenApiContact()
+                Contact = new OpenApiContact
                 {
                     Name = "MRA",
                     Url = new Uri("http://netcoreexamples.com")
@@ -106,7 +117,7 @@ public static class Extension
                             TokenUrl = new Uri($"{settings.Authority}/connect/token"),
                             Scopes = new Dictionary<string, string>
                             {
-                                { "blog-api", "blog-api" },
+                                { "blog-api", "blog-api" }
                             }
                         }
                     }

@@ -50,10 +50,7 @@ public struct AssignBlogTag
         public async Task<IResult> Handle(AddTagCommand request, CancellationToken cancellationToken)
         {
             var item = await _blogRepository.GetByIdAsync(request.BlogId);
-            if (item is null)
-            {
-                throw new Exception($"Couldn't find item={request.BlogId}");
-            }
+            if (item is null) throw new Exception($"Couldn't find item={request.BlogId}");
             item.AddTag(request.Tags);
             _blogRepository.Update(item);
             await _blogRepository.CommitAsync();
@@ -63,10 +60,7 @@ public struct AssignBlogTag
         public async Task<IResult> Handle(RemoveTagCommand request, CancellationToken cancellationToken)
         {
             var item = await _blogRepository.GetByIdAsync(request.BlogId);
-            if (item is null)
-            {
-                throw new Exception($"Couldn't find item={request.BlogId}");
-            }
+            if (item is null) throw new Exception($"Couldn't find item={request.BlogId}");
             item.RemoveTag(request.Tags.Select(x => x.Id).ToList());
             _blogRepository.Update(item);
             await _blogRepository.CommitAsync();

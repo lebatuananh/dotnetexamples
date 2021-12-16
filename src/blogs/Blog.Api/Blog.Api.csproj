@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <Import Project="..\..\..\GlobalUsings.props" />
+    <Import Project="..\..\..\GlobalUsings.props"/>
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
@@ -10,17 +10,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\shared\Shared.csproj" />
-      <ProjectReference Include="..\Blog.Domain\Blog.Domain.csproj" />
-      <ProjectReference Include="..\Blog.Infrastructure\Blog.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\shared\Shared.csproj"/>
+        <ProjectReference Include="..\Blog.Domain\Blog.Domain.csproj"/>
+        <ProjectReference Include="..\Blog.Infrastructure\Blog.Infrastructure.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data" />
+        <Folder Include="Data"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
+        <PackageReference Include="IdentityModel.AspNetCore.AccessTokenValidation" Version="1.0.0-preview.3"/>
+        <PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="6.0.0"/>
+        <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1"/>
     </ItemGroup>
 
 </Project>

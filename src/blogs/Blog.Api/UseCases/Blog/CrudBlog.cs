@@ -66,12 +66,12 @@ public struct MutateBlog
 
     public record UpdateBlogCommand : IUpdateCommand<Guid>
     {
-        public Guid Id { get; init; }
         public string Title { get; init; }
         public string Description { get; init; }
         public string Poster { get; init; }
         public string Content { get; init; }
         public BlogStatus Status { get; init; }
+        public Guid Id { get; init; }
 
         internal class Validator : AbstractValidator<UpdateBlogCommand>
         {
@@ -101,6 +101,27 @@ public struct MutateBlog
             _blogRepository = blogRepository;
         }
 
+        public async Task<IResult> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
+        {
+            var blogEntity = request.ToBlogEntity();
+            _blogRepository.Add(blogEntity);
+            await _blogRepository.CommitAsync();
+            return Results.Ok();
+        }
+
+        public async Task<IResult> Handle(GetBlogQuery request, CancellationToken cancellationToken)
+        {
+            var item = await _blogRepository.GetByIdAsync(request.Id);
+            if (item is null) throw new Exception($"Couldn't find item={request.Id}");
+
+            var result = new BlogDto(item.Id, item.Title, item.Description, item.Poster, item.Content, item.Status,
+                item.CreatedDate,
+                item.LastUpdatedDate);
+            if (item.BlogTags is { Count: > 0 }) result.AssignTagNames(item.BlogTags);
+
+            return Results.Ok(ResultModel<BlogDto>.Create(result));
+        }
+
         public async Task<IResult> Handle(GetListBlogQueries request, CancellationToken cancellationToken)
         {
             var queryable = await _blogRepository
@@ -108,7 +129,7 @@ public struct MutateBlog
                               || EF.Functions.ILike(x.Title, $"%{request.Query}%")
                 )
                 .OrderByDescending(x => x.CreatedDate).ToQueryResultAsync(request.Skip, request.Take);
-            var blogModels = new QueryResult<BlogDto>()
+            var blogModels = new QueryResult<BlogDto>
             {
                 Count = queryable.Count,
                 Items = queryable.Items
@@ -119,40 +140,10 @@ public struct MutateBlog
             return Results.Ok(ResultModel<QueryResult<BlogDto>>.Create(blogModels));
         }
 
-        public async Task<IResult> Handle(GetBlogQuery request, CancellationToken cancellationToken)
-        {
-            var item = await _blogRepository.GetByIdAsync(request.Id);
-            if (item is null)
-            {
-                throw new Exception($"Couldn't find item={request.Id}");
-            }
-
-            var result = new BlogDto(item.Id, item.Title, item.Description, item.Poster, item.Content, item.Status,
-                item.CreatedDate,
-                item.LastUpdatedDate);
-            if (item.BlogTags is { Count: > 0 })
-            {
-                result.AssignTagNames(item.BlogTags);
-            }
-
-            return Results.Ok(ResultModel<BlogDto>.Create(result));
-        }
-
-        public async Task<IResult> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
-        {
-            var blogEntity = request.ToBlogEntity();
-            _blogRepository.Add(blogEntity);
-            await _blogRepository.CommitAsync();
-            return Results.Ok();
-        }
-
         public async Task<IResult> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
         {
             var item = await _blogRepository.GetByIdAsync(request.Id);
-            if (item is null)
-            {
-                throw new Exception($"Couldn't find entity with id={request.Id}");
-            }
+            if (item is null) throw new Exception($"Couldn't find entity with id={request.Id}");
 
             item.Update(request.Title, request.Description, request.Poster, request.Content, request.Status);
             _blogRepository.Update(item);

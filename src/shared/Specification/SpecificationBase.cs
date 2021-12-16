@@ -2,78 +2,77 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Shared.Specification
+namespace Shared.Specification;
+
+public abstract class SpecificationBase<T> : ISpecification<T>
 {
-    public abstract class SpecificationBase<T> : ISpecification<T>
+    private Func<T, bool> _compiledExpression;
+
+    private Func<T, bool> CompiledExpression
     {
-        public abstract Expression<Func<T, bool>> Criteria { get; }
-        public List<Expression<Func<T, object>>> Includes { get; } = new();
-        public List<string> IncludeStrings { get; } = new();
-        public Expression<Func<T, object>> OrderBy { get; private set; }
-        public Expression<Func<T, object>> OrderByDescending { get; private set; }
-        public Expression<Func<T, object>> GroupBy { get; private set; }
+        get { return _compiledExpression ??= Criteria.Compile(); }
+    }
 
-        public int Take { get; private set; }
-        public int Skip { get; private set; }
-        public bool IsPagingEnabled { get; private set; }
+    public abstract Expression<Func<T, bool>> Criteria { get; }
+    public List<Expression<Func<T, object>>> Includes { get; } = new();
+    public List<string> IncludeStrings { get; } = new();
+    public Expression<Func<T, object>> OrderBy { get; private set; }
+    public Expression<Func<T, object>> OrderByDescending { get; private set; }
+    public Expression<Func<T, object>> GroupBy { get; private set; }
 
-        protected void ApplyIncludeList(IEnumerable<Expression<Func<T, object>>> includes)
-        {
-            foreach (var include in includes)
-            {
-                AddInclude(include);
-            }
-        }
+    public int Take { get; private set; }
+    public int Skip { get; private set; }
+    public bool IsPagingEnabled { get; private set; }
 
-        protected void AddInclude(Expression<Func<T, object>> includeExpression)
-        {
-            Includes.Add(includeExpression);
-        }
+    public bool IsSatisfiedBy(T obj)
+    {
+        return CompiledExpression(obj);
+    }
 
-        protected void ApplyIncludeList(IEnumerable<string> includes)
-        {
-            foreach (var include in includes)
-            {
-                AddInclude(include);
-            }
-        }
+    protected void ApplyIncludeList(IEnumerable<Expression<Func<T, object>>> includes)
+    {
+        foreach (var include in includes) AddInclude(include);
+    }
 
-        protected void AddInclude(string includeString)
-        {
-            IncludeStrings.Add(includeString);
-        }
+    protected void AddInclude(Expression<Func<T, object>> includeExpression)
+    {
+        Includes.Add(includeExpression);
+    }
 
-        protected void ApplyPaging(int skip, int take)
-        {
-            Skip = skip;
-            Take = take;
-            IsPagingEnabled = true;
-        }
+    protected void ApplyIncludeList(IEnumerable<string> includes)
+    {
+        foreach (var include in includes) AddInclude(include);
+    }
 
-        protected void ApplyOrderBy(Expression<Func<T, object>> orderByExpression) =>
-            OrderBy = orderByExpression;
+    protected void AddInclude(string includeString)
+    {
+        IncludeStrings.Add(includeString);
+    }
 
-        protected void ApplyOrderByDescending(Expression<Func<T, object>> orderByDescendingExpression) =>
-            OrderByDescending = orderByDescendingExpression;
+    protected void ApplyPaging(int skip, int take)
+    {
+        Skip = skip;
+        Take = take;
+        IsPagingEnabled = true;
+    }
 
-        protected void ApplyGroupBy(Expression<Func<T, object>> groupByExpression) =>
-            GroupBy = groupByExpression;
+    protected void ApplyOrderBy(Expression<Func<T, object>> orderByExpression)
+    {
+        OrderBy = orderByExpression;
+    }
 
-        protected void ApplySorting(string sort)
-        {
-            this.ApplySorting(sort, nameof(ApplyOrderBy), nameof(ApplyOrderByDescending));
-        }
+    protected void ApplyOrderByDescending(Expression<Func<T, object>> orderByDescendingExpression)
+    {
+        OrderByDescending = orderByDescendingExpression;
+    }
 
-        private Func<T, bool> _compiledExpression;
+    protected void ApplyGroupBy(Expression<Func<T, object>> groupByExpression)
+    {
+        GroupBy = groupByExpression;
+    }
 
-        private Func<T, bool> CompiledExpression
-        {
-            get { return _compiledExpression ??= Criteria.Compile(); }
-        }
-
-        public bool IsSatisfiedBy(T obj)
-        {
-            return CompiledExpression(obj);
-        }
+    protected void ApplySorting(string sort)
+    {
+        this.ApplySorting(sort, nameof(ApplyOrderBy), nameof(ApplyOrderByDescending));
     }
 }

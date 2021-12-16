@@ -41,7 +41,6 @@ public static class Extension
         services.AddCors(options =>
         {
             if (optionsAction == null)
-            {
                 options.AddPolicy(corsName,
                     policy =>
                     {
@@ -50,11 +49,8 @@ public static class Extension
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });
-            }
             else
-            {
                 optionsAction.Invoke(options);
-            }
         });
 
         return services;

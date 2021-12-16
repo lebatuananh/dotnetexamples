@@ -1,3 +1,9 @@
 ASPNETCORE_ENVIRONMENT=Development
 ConnectionStrings__DefaultConnection=Server=postgres_example;Port=5432;Database=netcore_example;User Id=postgres;Password=Mramra1234!@;
+Authentication__Authority=https://id.programersgang.tech
+Authentication__ApiName=blog-api
+Authentication__ApiSecret=blog_admin
+Authentication__RequireHttpsMetadata=false
+Authentication__ClientId=blog_admin
+Authentication__AdministrationRole=Administrator
 TZ=Asia/Ho_Chi_Minh

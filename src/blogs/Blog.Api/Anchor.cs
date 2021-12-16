@@ -1,3 +1,5 @@
 ﻿namespace Blog.Api;
 
-internal struct Anchor{}
+internal struct Anchor
+{
+}

@@ -23,6 +23,15 @@ services:
       context: .
       dockerfile: src/blogs/Blog.Api/Dockerfile        
 
+#####################################
+# FileMangement
+#####################################
+  netcorexamples.filemangement:
+    container_name: netcorexamples_filemangement
+    image: netcorexamples_filemangement
+    build:
+      context: .
+      dockerfile: src/filemanagement/FileManagement/Dockerfile
 
 volumes:
   blog-data:

@@ -1,38 +1,37 @@
 using System;
 using System.Linq.Expressions;
 
-namespace Shared.Specification
+namespace Shared.Specification;
+
+public class Or<T> : SpecificationBase<T>
 {
-    public class Or<T> : SpecificationBase<T>
+    private readonly ISpecification<T> _left;
+    private readonly ISpecification<T> _right;
+
+    public Or(
+        ISpecification<T> left,
+        ISpecification<T> right)
     {
-        private readonly ISpecification<T> _left;
-        private readonly ISpecification<T> _right;
+        _left = left;
+        _right = right;
+    }
 
-        public Or(
-            ISpecification<T> left,
-            ISpecification<T> right)
+    // OrSpecification
+    public override Expression<Func<T, bool>> Criteria
+    {
+        get
         {
-            _left = left;
-            _right = right;
-        }
+            var objParam = Expression.Parameter(typeof(T), "obj");
 
-        // OrSpecification
-        public override Expression<Func<T, bool>> Criteria
-        {
-            get
-            {
-                var objParam = Expression.Parameter(typeof(T), "obj");
+            var newExpr = Expression.Lambda<Func<T, bool>>(
+                Expression.OrElse(
+                    Expression.Invoke(_left.Criteria, objParam),
+                    Expression.Invoke(_right.Criteria, objParam)
+                ),
+                objParam
+            );
 
-                var newExpr = Expression.Lambda<Func<T, bool>>(
-                    Expression.OrElse(
-                        Expression.Invoke(_left.Criteria, objParam),
-                        Expression.Invoke(_right.Criteria, objParam)
-                    ),
-                    objParam
-                );
-
-                return newExpr;
-            }
+            return newExpr;
         }
     }
 }

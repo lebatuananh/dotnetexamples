@@ -6,50 +6,49 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared.Validator;
 
-namespace Shared.Controller
+namespace Shared.Controller;
+
+public class ExceptionMiddleware
 {
-    public class ExceptionMiddleware
+    private readonly ILogger<ExceptionMiddleware> _logger;
+    private readonly RequestDelegate _next;
+
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionMiddleware> _logger;
+        _next = next;
+        _logger = logger;
+    }
 
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
+    public async Task InvokeAsync(HttpContext httpContext)
+    {
+        try
         {
-            _next = next;
-            _logger = logger;
+            await _next(httpContext);
         }
-
-        public async Task InvokeAsync(HttpContext httpContext)
+        catch (Exception ex)
         {
-            try
-            {
-                await _next(httpContext);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($@"Something went wrong: {ex}");
-                await HandleExceptionAsync(httpContext, ex);
-            }
+            _logger.LogError($@"Something went wrong: {ex}");
+            await HandleExceptionAsync(httpContext, ex);
         }
+    }
 
-        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    {
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+        if (exception is ValidationException validationException)
         {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            var validationErrorModel = ResultModel<string>.Create(validationException.ValidationResultModel
+                    .Errors.Aggregate("", (a, b) => a + $"{b.Field}-{b.Message}\n"), true, "Validation Error.")
+                .ToString();
 
-            if (exception is ValidationException validationException)
-            {
-                var validationErrorModel = ResultModel<string>.Create(validationException.ValidationResultModel
-                        .Errors.Aggregate("", (a, b) => a + $"{b.Field}-{b.Message}\n"), true, "Validation Error.")
-                    .ToString();
-
-                await context.Response.WriteAsync(validationErrorModel);
-            }
-            else
-            {
-                await context.Response.WriteAsync(
-                    ResultModel<string>.Create("", true, "Internal Server Error.").ToString());
-            }
+            await context.Response.WriteAsync(validationErrorModel);
+        }
+        else
+        {
+            await context.Response.WriteAsync(
+                ResultModel<string>.Create("", true, "Internal Server Error.").ToString());
         }
     }
 }

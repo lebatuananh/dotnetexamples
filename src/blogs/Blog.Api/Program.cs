@@ -1,5 +1,4 @@
 using Blog.Api;
-using Microsoft.OpenApi.Models;
 using BlogEntity = Blog.Domain.AggregatesModel.BlogAggregate.Blog;
 
 var builder = WebApplication.CreateBuilder(args);

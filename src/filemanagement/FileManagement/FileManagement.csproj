@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+        <UserSecretsId>c838510e-e5ff-4570-a6a8-41b808480255</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DockerfileContext>..\..</DockerfileContext>
+        <LangVersion>10</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.12" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="wwwroot\files\private\" />
+        <Folder Include="wwwroot\files\public\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\shared\Shared.csproj" />
+        <ProjectReference Include="..\elFinder.NetCore\elFinder.NetCore.csproj" />
+    </ItemGroup>
+
+</Project>

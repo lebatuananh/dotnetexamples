@@ -60,8 +60,8 @@ public struct MutateTag
 
     public record UpdateTagCommand : IUpdateCommand<Guid>
     {
-        public Guid Id { get; init; }
         public string Name { get; init; }
+        public Guid Id { get; init; }
 
 
         internal class Validator : AbstractValidator<UpdateTagCommand>
@@ -94,6 +94,14 @@ public struct MutateTag
             _tagRepository = tagRepository;
         }
 
+        public async Task<IResult> Handle(CreateTagCommand request, CancellationToken cancellationToken)
+        {
+            var tagEntity = request.ToBlogEntity();
+            _tagRepository.Add(tagEntity);
+            await _tagRepository.CommitAsync();
+            return Results.Ok();
+        }
+
         public async Task<IResult> Handle(GetListTagQueries request, CancellationToken cancellationToken)
         {
             var queryable = await _tagRepository
@@ -101,7 +109,7 @@ public struct MutateTag
                               || EF.Functions.ILike(x.Name, $"%{request.Query}%")
                 )
                 .OrderByDescending(x => x.CreatedDate).ToQueryResultAsync(request.Skip, request.Take);
-            var tagModels = new QueryResult<TagDto>()
+            var tagModels = new QueryResult<TagDto>
             {
                 Count = queryable.Count,
                 Items = queryable.Items.Select(x => new TagDto(x.Id, x.Name, x.CreatedDate, x.LastUpdatedDate))
@@ -113,31 +121,17 @@ public struct MutateTag
         public async Task<IResult> Handle(GetTagQuery request, CancellationToken cancellationToken)
         {
             var item = await _tagRepository.GetByIdAsync(request.Id);
-            if (item is null)
-            {
-                throw new Exception($"Couldn't find item={request.Id}");
-            }
+            if (item is null) throw new Exception($"Couldn't find item={request.Id}");
 
             var result = new TagDto(item.Id, item.Name, item.CreatedDate, item.LastUpdatedDate);
 
             return Results.Ok(ResultModel<TagDto>.Create(result));
         }
 
-        public async Task<IResult> Handle(CreateTagCommand request, CancellationToken cancellationToken)
-        {
-            var tagEntity = request.ToBlogEntity();
-            _tagRepository.Add(tagEntity);
-            await _tagRepository.CommitAsync();
-            return Results.Ok();
-        }
-
         public async Task<IResult> Handle(UpdateTagCommand request, CancellationToken cancellationToken)
         {
             var item = await _tagRepository.GetByIdAsync(request.Id);
-            if (item is null)
-            {
-                throw new Exception($"Couldn't find entity with id={request.Id}");
-            }
+            if (item is null) throw new Exception($"Couldn't find entity with id={request.Id}");
 
             item.Update(request.Name);
             _tagRepository.Update(item);

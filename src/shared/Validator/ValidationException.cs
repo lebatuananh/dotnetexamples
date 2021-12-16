@@ -1,14 +1,13 @@
 using System;
 
-namespace Shared.Validator
-{
-    public class ValidationException : Exception
-    {
-        public ValidationException(ValidationResultModel validationResultModel)
-        {
-            ValidationResultModel = validationResultModel;
-        }
+namespace Shared.Validator;
 
-        public ValidationResultModel ValidationResultModel { get; }
+public class ValidationException : Exception
+{
+    public ValidationException(ValidationResultModel validationResultModel)
+    {
+        ValidationResultModel = validationResultModel;
     }
+
+    public ValidationResultModel ValidationResultModel { get; }
 }
