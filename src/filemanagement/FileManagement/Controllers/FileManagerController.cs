@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Constants;
 
 namespace FileManagement.Controllers;
 
 [Route("file-manager")]
-[Authorize]
+[Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
 public class FileManagerController : Controller
 {
     public IActionResult Index()

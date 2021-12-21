@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Blog.Domain.AggregatesModel.BlogAggregate;
 using BlogEntity = Blog.Domain.AggregatesModel.BlogAggregate.Blog;
 
 namespace Blog.Api.UseCases.Blog;

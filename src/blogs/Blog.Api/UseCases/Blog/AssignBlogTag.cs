@@ -1,4 +1,7 @@
-﻿namespace Blog.Api.UseCases.Blog;
+﻿using Blog.Domain.AggregatesModel.BlogAggregate;
+using Blog.Domain.AggregatesModel.TagAggregate;
+
+namespace Blog.Api.UseCases.Blog;
 
 public struct AssignBlogTag
 {

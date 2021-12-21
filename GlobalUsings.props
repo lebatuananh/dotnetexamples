@@ -22,9 +22,6 @@
         <Using Include="Shared"/>
         <Using Include="Shared.Identity"/>
         
-        <Using Include="Blog.Domain.AggregatesModel.BlogAggregate"/>
-        <Using Include="Blog.Domain.AggregatesModel.TagAggregate"/>
-        
         <Using Include="FluentValidation"/>
         <Using Include="MediatR"/>
         <Using Include="Microsoft.AspNetCore.Mvc" />

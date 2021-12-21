@@ -1,17 +1,17 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
-using Blog.Api.UseCases.Blog;
-using Blog.Api.UseCases.Tags;
-using Blog.Domain.AggregatesModel.BlogAggregate;
-using Blog.Domain.AggregatesModel.TagAggregate;
-using Blog.Infrastructure;
-using Blog.Infrastructure.Repositories;
+using IcedTea.Domain.AggregateModel.CashFundAggregate;
+using IcedTea.Domain.AggregateModel.CashFundTransactionAggregate;
+using IcedTea.Domain.AggregateModel.CustomerAggregate;
+using IcedTea.Domain.AggregateModel.TransactionAggregate;
+using IcedTea.Infrastructure;
+using IcedTea.Infrastructure.Repositories;
+using IcedTead.Api;
 using IdentityModel;
 using IdentityModel.AspNetCore.AccessTokenValidation;
 using IdentityServer4.AccessTokenValidation;
-using Microsoft.AspNetCore.Authorization;
 
-namespace Blog.Api;
+namespace IcedTea.Api;
 
 public static class Extension
 {
@@ -20,25 +20,27 @@ public static class Extension
 
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<BlogDbContext>(options =>
+        services.AddDbContext<MainDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString(ConfigurationKeys.DefaultConnectionString), b =>
             {
                 b.MigrationsAssembly(AssemblyName);
-                b.MigrationsHistoryTable("__EFMigrationsHistory", BlogDbContext.SchemaName);
+                b.MigrationsHistoryTable("__EFMigrationsHistory", MainDbContext.SchemaName);
                 b.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             }).UseSnakeCaseNamingConvention();
-            options.UseModel(BlogDbContextModel.Instance);
+            options.UseModel(MainDbContextModel.Instance);
         });
-        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<BlogDbContext>());
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<MainDbContext>());
         services.AddScoped<IScopeContext, ScopeContext>();
         return services;
     }
 
     public static IServiceCollection AddRepository(this IServiceCollection services)
     {
-        services.AddScoped<IBlogRepository, BlogRepository>();
-        services.AddScoped<ITagRepository, TagRepository>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<ICashFundRepository, CashFundRepository>();
+        services.AddScoped<ICashFundTransactionRepository, CashFundTransactionRepository>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
         return services;
     }
 
@@ -90,6 +92,7 @@ public static class Extension
         return services;
     }
 
+
     public static IServiceCollection AddSwaggerConfig(this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -98,8 +101,8 @@ public static class Extension
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Description = "Blog web api implementation using Minimal Api in Asp.Net Core",
-                Title = "Blog Api",
+                Description = "IcedTea web api implementation using Minimal Api in Asp.Net Core",
+                Title = "IcedTea Api",
                 Version = "v1",
                 Contact = new OpenApiContact
                 {
@@ -136,87 +139,5 @@ public static class Extension
             });
         });
         return services;
-    }
-
-    public static WebApplication UseEndpoint(this WebApplication app)
-    {
-        #region BlogController
-
-        app.MapGet("api/v1/blogs",
-                async ([FromQuery] int skip, int take, string? query, ISender sender) =>
-                    await sender.Send(new MutateBlog.GetListBlogQueries
-                    {
-                        Skip = skip,
-                        Query = query,
-                        Take = take
-                    }))
-            .Produces(200, typeof(ResultModel<QueryResult<BlogDto>>))
-            .WithTags("Blogs")
-            .ProducesProblem(404);
-
-        app.MapPost("api/v1/blogs",
-                [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
-                async ([FromBody] MutateBlog.CreateBlogCommand command, ISender sender) =>
-                    await sender.Send(command)).Produces(200)
-            .WithTags("Blogs")
-            .ProducesProblem(401);
-
-        app.MapPut("api/v1/blogs/{id}",
-                async ([FromRoute] Guid id, MutateBlog.UpdateBlogCommand command, ISender sender) =>
-                    await sender.Send(command with { Id = id }))
-            .Produces(200)
-            .WithTags("Blogs");
-
-        app.MapGet("api/v1/blogs/{id}",
-                async ([FromRoute] Guid id, ISender sender) =>
-                    await sender.Send(new MutateBlog.GetBlogQuery { Id = id }))
-            .Produces(200, typeof(ResultModel<BlogDto>))
-            .WithTags("Blogs").ProducesProblem(404);
-
-        app.MapPut("api/v1/blogs/{id}/assign-tags",
-                [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
-                async ([FromRoute] Guid id, AssignBlogTag.AddTagCommand command, ISender sender) =>
-                    await sender.Send(command with { BlogId = id })).Produces(200)
-            .WithTags("Blogs")
-            .ProducesProblem(401);
-
-        app.MapPut("api/v1/blogs/{id}/remove-tags",
-                [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
-                async ([FromRoute] Guid id, AssignBlogTag.RemoveTagCommand command, ISender sender) =>
-                    await sender.Send(command with { BlogId = id }))
-            .Produces(200)
-            .WithTags("Blogs")
-            .ProducesProblem(401);
-
-        #endregion
-
-        #region TagController
-
-        app.MapGet("api/v1/tags",
-            async ([FromQuery] int skip, int take, string? query, ISender sender) =>
-                await sender.Send(new MutateTag.GetListTagQueries
-                {
-                    Skip = skip,
-                    Query = query,
-                    Take = take
-                })).Produces(200, typeof(ResultModel<QueryResult<TagDto>>)).WithTags("Tags").ProducesProblem(404);
-        app.MapPost("api/v1/tags",
-            [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
-            async ([FromBody] MutateTag.CreateTagCommand command, ISender sender) =>
-                await sender.Send(command)).WithTags("Tags").Produces(200).ProducesProblem(401);
-
-        app.MapPut("api/v1/tags/{id}",
-            [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
-            async ([FromRoute] Guid id, MutateTag.UpdateTagCommand command, ISender sender) =>
-                await sender.Send(command with { Id = id })).WithTags("Tags").Produces(200).ProducesProblem(401);
-
-        app.MapGet("api/v1/tags/{id}",
-                async ([FromRoute] Guid id, ISender sender) =>
-                    await sender.Send(new MutateTag.GetTagQuery { Id = id })).Produces(200, typeof(ResultModel<TagDto>))
-            .WithTags("Tags").ProducesProblem(404);
-
-        #endregion
-
-        return app;
     }
 }

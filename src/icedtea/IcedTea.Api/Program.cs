@@ -1,7 +1,7 @@
-using Blog.Api;
+using IcedTea.Api;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.AddSerilog("Blogs");
+builder.Host.AddSerilog("Icedtea");
 // Add services to the container.
 builder.Services
     .AddCustomCors()
@@ -37,7 +37,7 @@ app.UseSwaggerUI(c =>
     c.OAuthUsePkce();
 });
 app.MapFallback(() => Results.Redirect("/swagger"));
-app.UseEndpoint();
+
 await WithSeriLog(() =>
 {
     app.AutoInit().Run();

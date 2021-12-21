@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Blog.Domain.AggregatesModel.TagAggregate;
 
 namespace Blog.Api.UseCases.Tags;
 

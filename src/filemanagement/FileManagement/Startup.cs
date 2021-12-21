@@ -1,6 +1,7 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
+using IdentityModel;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -57,19 +58,38 @@ public class Startup
             })
             .AddOpenIdConnect(AuthenticationConsts.OidcAuthenticationScheme, options =>
             {
+                options.SignInScheme = "Cookies";
                 options.Authority = adminApiConfiguration.Authority;
                 options.ClientId = adminApiConfiguration.ClientId;
                 options.ClientSecret = adminApiConfiguration.ClientSecret;
-                options.ResponseType = "code";
+                options.ResponseType = "code id_token";
+                options.GetClaimsFromUserInfoEndpoint = true;
                 options.RequireHttpsMetadata = false;
                 options.SaveTokens = true;
+                options.Scope.Add("roles");
+                options.Scope.Add("profile");
+                options.Scope.Add("file-management");
+                options.Scope.Add("offline_access");
+                options.Scope.Add("openid");
+                options.ClaimActions.MapJsonKey("role", "role", "role");
+                options.ClaimActions.MapJsonKey("scope", "scope", "scope");
+                options.TokenValidationParameters.RoleClaimType = "role";
 
-                //Fix bypass SSL connection validate
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.ServerCertificateCustomValidationCallback =
-                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-                options.BackchannelHttpHandler = handler;
             });
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(AuthorizationConsts.AdministrationPolicy,
+                policy =>
+                    policy.RequireAssertion(context => context.User.HasClaim(c =>
+                            c.Type == $"http://schemas.microsoft.com/ws/2008/06/identity/claims/{JwtClaimTypes.Role}" &&
+                            c.Value == adminApiConfiguration.AdministrationRole ||
+                            c.Type == JwtClaimTypes.Role && c.Value == adminApiConfiguration.AdministrationRole ||
+                            c.Type == $"client_{JwtClaimTypes.Role}" &&
+                            c.Value == adminApiConfiguration.AdministrationRole
+                        ) && context.User.HasClaim(c =>
+                            c.Type == JwtClaimTypes.Scope && c.Value == adminApiConfiguration.ApiName)
+                    ));
+        });
         services.AddControllersWithViews();
     }
 
@@ -98,7 +118,7 @@ public class Startup
         app.UseStaticFiles();
 
         app.UseRouting();
-        
+
         app.UseAuthentication();
         app.UseAuthorization();
 

@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
 using FileManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace FileManagement.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -16,6 +18,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        var test = User;
         return View();
     }
 
