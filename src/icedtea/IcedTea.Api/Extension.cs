@@ -1,5 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
+using IcedTea.Api.UseCases.CashFund;
+using IcedTea.Api.UseCases.Customer;
 using IcedTea.Domain.AggregateModel.CashFundAggregate;
 using IcedTea.Domain.AggregateModel.CashFundTransactionAggregate;
 using IcedTea.Domain.AggregateModel.CustomerAggregate;
@@ -122,7 +124,9 @@ public static class Extension
                             TokenUrl = new Uri($"{settings.Authority}/connect/token"),
                             Scopes = new Dictionary<string, string>
                             {
-                                { "blog-api", "blog-api" }
+                                { "iced-tea-api", "iced-tea-api" },
+                                { "identity_admin_api", "identity_admin_api" },
+                                { "roles", "roles" }
                             }
                         }
                     }
@@ -134,10 +138,17 @@ public static class Extension
                     {
                         Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
                     },
-                    new List<string> { "blog" }
+                    new List<string> { "icedtea" }
                 }
             });
         });
         return services;
+    }
+
+    public static WebApplication UseEndpoint(this WebApplication app)
+    {
+        app.UseCustomerEndpoint();
+        app.UseCashFundEndpoint();
+        return app;
     }
 }

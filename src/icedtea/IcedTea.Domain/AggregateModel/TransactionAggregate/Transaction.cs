@@ -29,11 +29,25 @@ public class Transaction : ModifierTrackingEntity, IAggregateRoot
         BankAccount = bankAccount;
         CustomerId = customerId;
         PaymentGateway = paymentGateway;
+        ErrorMessage = string.Empty;
+        Response = string.Empty;
     }
 
     public void MarkCompleted()
     {
         CompletedDate = DateTimeOffset.UtcNow;
         Status = TransactionStatus.Completed;
+    }
+
+    public void MarkPending()
+    {
+        CompletedDate = DateTimeOffset.UtcNow;
+        Status = TransactionStatus.Completed;
+    }
+
+    public void MarkAccept()
+    {
+        CompletedDate = DateTimeOffset.UtcNow;
+        Status = TransactionStatus.Accept;
     }
 }

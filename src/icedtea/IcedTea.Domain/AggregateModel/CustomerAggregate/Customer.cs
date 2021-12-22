@@ -11,24 +11,28 @@ public class Customer : ModifierTrackingEntity, IAggregateRoot
     public Guid ExternalId { get; private set; }
     public int Status { get; private set; }
     public string DeviceId { get; private set; }
-    public virtual Wallet Wallet { get; set; }
+    public virtual Wallet Wallet { get; private set; }
     public virtual IList<Transaction> Transactions { get; private set; }
 
 
-    public Customer(string name, string userName, Guid walletId, Guid externalId, int status, string deviceId)
+    public Customer(string name, string userName, Guid externalId, int status, string deviceId)
     {
         Name = name;
         UserName = userName;
-        WalletId = walletId;
         ExternalId = externalId;
         Status = status;
         DeviceId = deviceId;
+        Wallet = new Wallet();
     }
 
-    public void Update(string name, int status)
+    public void Update(string name)
     {
         Name = name;
-        Status = status;
+    }
+
+    public void UpdateDeviceId(string deviceId)
+    {
+        DeviceId = deviceId;
     }
 
     public void UpdateWallet(Guid walletId, Wallet wallet)

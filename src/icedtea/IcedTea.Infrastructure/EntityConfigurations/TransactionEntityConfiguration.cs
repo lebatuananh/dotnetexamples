@@ -12,6 +12,7 @@ public class TransactionEntityConfiguration : IEntityTypeConfiguration<Transacti
         builder.ToTable("transactions", MainDbContext.SchemaName);
         builder.Property(x => x.Id).HasColumnType("uuid")
             .HasDefaultValueSql(PostgresDefaultAlgorithm.UuidAlgorithm);
+        
         builder.HasOne(t => t.Customer)
             .WithMany(x => x.Transactions)
             .HasForeignKey(t => t.CustomerId)

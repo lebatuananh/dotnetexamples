@@ -27,13 +27,18 @@ public class CashFund : ModifierTrackingEntity, IAggregateRoot
         TotalAmount = totalAmount;
     }
 
-    public void Deposit(decimal amount)
+    public void Deposit(decimal amount, CashFundTransaction cashFundTransaction)
     {
+        CashFundTransactions ??= new List<CashFundTransaction>();
+        CashFundTransactions.Add(cashFundTransaction);
         TotalAmount += amount;
     }
+    
 
-    public void Charge(decimal amount)
+    public void Charge(decimal amount, CashFundTransaction cashFundTransaction)
     {
+        CashFundTransactions ??= new List<CashFundTransaction>();
+        CashFundTransactions.Add(cashFundTransaction);
         TotalAmount -= amount;
     }
 }

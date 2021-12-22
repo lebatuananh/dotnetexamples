@@ -3,6 +3,7 @@ using System;
 using IcedTea.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IcedTea.Api.Data.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211222074526_AddInfomationCustomerCashFundTransaction")]
+    partial class AddInfomationCustomerCashFundTransaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,8 +101,10 @@ namespace IcedTea.Api.Data.Migrations
                         .HasColumnName("created_date");
 
                     b.Property<Guid>("CustomerId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("customer_id");
+                        .HasColumnName("customer_id")
+                        .HasDefaultValueSql("uuid_generate_v4()");
 
                     b.Property<string>("CustomerName")
                         .IsRequired()

@@ -15,7 +15,8 @@ builder.Services
     .AddRepository()
     .AddEndpointsApiExplorer()
     .AddInitializationStages()
-    .AddControllers();
+    .AddControllers()
+    .AddNewtonsoftJson();
 
 var app = builder.Build();
 
@@ -32,12 +33,12 @@ app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.OAuthClientId("blog_admin_api_swaggerui");
-    c.OAuthAppName("BlogApi");
+    c.OAuthClientId("iced_tea_api_swaggerui");
+    c.OAuthAppName("IcedTeaApi");
     c.OAuthUsePkce();
 });
 app.MapFallback(() => Results.Redirect("/swagger"));
-
+app.UseEndpoint();
 await WithSeriLog(() =>
 {
     app.AutoInit().Run();

@@ -13,6 +13,8 @@ public class CashFundTransactionEntityConfiguration : IEntityTypeConfiguration<C
 
         builder.Property(x => x.Id).HasColumnType("uuid")
             .HasDefaultValueSql(PostgresDefaultAlgorithm.UuidAlgorithm);
+        
+        builder.Property(x => x.CustomerId).HasColumnType("uuid");
 
         builder.HasOne(t => t.CashFund)
             .WithMany(x => x.CashFundTransactions)

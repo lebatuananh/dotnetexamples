@@ -70,6 +70,21 @@ namespace IcedTead.Api
                 fieldInfo: typeof(DateTrackingEntity).GetField("<CreatedDate>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             createdDate.AddAnnotation("Relational:ColumnName", "created_date");
 
+            var customerId = runtimeEntityType.AddProperty(
+                "CustomerId",
+                typeof(Guid),
+                propertyInfo: typeof(CashFundTransaction).GetProperty("CustomerId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(CashFundTransaction).GetField("<CustomerId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            customerId.AddAnnotation("Relational:ColumnName", "customer_id");
+            customerId.AddAnnotation("Relational:ColumnType", "uuid");
+
+            var customerName = runtimeEntityType.AddProperty(
+                "CustomerName",
+                typeof(string),
+                propertyInfo: typeof(CashFundTransaction).GetProperty("CustomerName", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(CashFundTransaction).GetField("<CustomerName>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            customerName.AddAnnotation("Relational:ColumnName", "customer_name");
+
             var lastUpdatedBy = runtimeEntityType.AddProperty(
                 "LastUpdatedBy",
                 typeof(string),

@@ -48,7 +48,7 @@ public class ExceptionMiddleware
         else
         {
             await context.Response.WriteAsync(
-                ResultModel<string>.Create("", true, "Internal Server Error.").ToString());
+                ResultModel<string>.Create(exception.Message, true, "Internal Server Error.").ToString());
         }
     }
 }

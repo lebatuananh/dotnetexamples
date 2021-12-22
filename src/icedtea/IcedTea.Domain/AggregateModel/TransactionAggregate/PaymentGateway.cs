@@ -6,5 +6,6 @@ public enum PaymentGateway
     Cash,
     Momo,
     VnPay,
-    ZaloPay
+    ZaloPay,
+    MyWallet
 }
