@@ -105,7 +105,7 @@ public struct MutateCustomer
 
         public async Task<IResult> Handle(GetListCustomerQueries request, CancellationToken cancellationToken)
         {
-            var customerModels = new QueryResult<CustomerDto>();
+            QueryResult<CustomerDto> customerModels;
             if (_scopeContext.CurrentAccountId != Guid.Empty && _scopeContext.Role == AuthorizationConsts.AdminRole)
             {
                 var queryable = await _customerRepository
@@ -124,7 +124,17 @@ public struct MutateCustomer
             }
             else
             {
-                
+                var queryable = await _customerRepository
+                    .FindAll(x => x.ExternalId.Equals(_scopeContext.CurrentAccountId))
+                    .OrderByDescending(x => x.CreatedDate).ToQueryResultAsync(request.Skip, request.Take);
+                customerModels = new QueryResult<CustomerDto>
+                {
+                    Count = queryable.Count,
+                    Items = queryable.Items
+                        .Select(x => new CustomerDto(x.Id, x.Name, x.UserName, x.DeviceId, x.Status, x.CreatedDate,
+                            x.LastUpdatedDate, new WalletDto(x.Wallet.TotalAmount, x.Wallet.SubTotalAmount)))
+                        .ToList()
+                };
             }
 
             return Results.Ok(ResultModel<QueryResult<CustomerDto>>.Create(customerModels));

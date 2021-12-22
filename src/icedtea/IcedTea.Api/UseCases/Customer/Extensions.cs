@@ -8,7 +8,7 @@ public static class Extensions
     public static WebApplication UseCustomerEndpoint(this WebApplication app)
     {
         app.MapGet("api/v1/admin/customer",
-                [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
+                [Authorize]
                 async ([FromQuery] int skip, int take, string? query, ISender sender) =>
                     await sender.Send(new MutateCustomer.GetListCustomerQueries(skip, take, query)))
             .Produces(200, typeof(ResultModel<QueryResult<CustomerDto>>))
