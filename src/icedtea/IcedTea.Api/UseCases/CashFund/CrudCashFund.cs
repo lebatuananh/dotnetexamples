@@ -103,7 +103,7 @@ public struct MutateCashFund
             {
                 Count = queryable.Count,
                 Items = queryable.Items
-                    .Select(x => new CashFundDto(x.Id, x.Name, x.TotalAmount))
+                    .Select(x => new CashFundDto(x.Id, x.Name, x.TotalAmount,x.CreatedDate,x.LastUpdatedDate))
                     .ToList()
             };
             return Results.Ok(ResultModel<QueryResult<CashFundDto>>.Create(customerModels));
@@ -113,7 +113,7 @@ public struct MutateCashFund
         {
             var item = await _cashFundRepository.GetByIdAsync(request.Id, c => c.Transactions);
             if (item is null) throw new Exception($"Couldn't find item={request.Id}");
-            var result = new CashFundDto(item.Id, item.Name, item.TotalAmount);
+            var result = new CashFundDto(item.Id, item.Name, item.TotalAmount,item.CreatedDate,item.LastUpdatedDate);
             result.AssignTransaction(item.CashFundTransactions, item.Transactions);
             return Results.Ok(ResultModel<CashFundDto>.Create(result));
         }

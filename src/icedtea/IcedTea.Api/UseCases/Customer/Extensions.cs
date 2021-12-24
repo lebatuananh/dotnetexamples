@@ -8,8 +8,7 @@ public static class Extensions
     public static WebApplication UseCustomerEndpoint(this WebApplication app)
     {
         app.MapGet("api/v1/admin/customer",
-                [Authorize]
-                async ([FromQuery] int skip, int take, string? query, ISender sender) =>
+                [Authorize] async ([FromQuery] int skip, int take, string? query, ISender sender) =>
                     await sender.Send(new MutateCustomer.GetListCustomerQueries(skip, take, query)))
             .Produces(200, typeof(ResultModel<QueryResult<CustomerDto>>))
             .WithTags("Customer")
@@ -79,8 +78,7 @@ public static class Extensions
 
 
         app.MapPut("api/v1/admin/customer/{id}/{cashFundId}/deposit-cash-fund",
-                [Authorize]
-                async ([FromRoute] Guid id, [FromRoute] Guid cashFundId,
+                [Authorize] async ([FromRoute] Guid id, [FromRoute] Guid cashFundId,
                         TransactionCustomer.CustomerDepositCashFundCommand command,
                         ISender sender) =>
                     await sender.Send(command with
@@ -88,6 +86,15 @@ public static class Extensions
                         Id = id,
                         CashFundId = cashFundId
                     }))
+            .Produces(200)
+            .WithTags("Customer");
+
+        app.MapGet("api/v1/admin/customer/{id}/transactions",
+                [Authorize] async ([FromRoute] Guid id,
+                        [FromQuery] int skip, int take, string? query,
+                        ISender sender) =>
+                    await sender.Send(
+                        new TransactionCustomer.GetCustomerTransactionQuery(skip, take, query) { Id = id }))
             .Produces(200)
             .WithTags("Customer");
 

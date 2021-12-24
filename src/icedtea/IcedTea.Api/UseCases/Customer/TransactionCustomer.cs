@@ -8,6 +8,11 @@ namespace IcedTea.Api.UseCases.Customer;
 
 public struct TransactionCustomer
 {
+    public record GetCustomerTransactionQuery(int Skip, int Take, string? Query) : IQueries
+    {
+        public Guid Id { get; init; }
+    }
+
     public record CustomerDepositCommand(Guid Id) : IUpdateCommand<Guid>
     {
         public decimal TotalAmount { get; init; }
@@ -27,10 +32,6 @@ public struct TransactionCustomer
                 RuleFor(x => x.TotalAmount)
                     .GreaterThan(0)
                     .WithMessage("TotalAmount is greater than 0");
-                RuleFor(x => x.PaymentGateway)
-                    .NotNull()
-                    .NotEmpty()
-                    .WithMessage("PaymentGateway is not empty");
                 RuleFor(x => x.Id)
                     .NotNull()
                     .NotEmpty()
@@ -97,7 +98,8 @@ public struct TransactionCustomer
 
     internal class Handler : IRequestHandler<CustomerDepositCommand, IResult>,
         IRequestHandler<AcceptTransactionCustomerDepositCommand, IResult>,
-        IRequestHandler<CustomerDepositCashFundCommand, IResult>
+        IRequestHandler<CustomerDepositCashFundCommand, IResult>,
+        IRequestHandler<GetCustomerTransactionQuery, IResult>
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly ITransactionRepository _transactionRepository;
@@ -153,6 +155,26 @@ public struct TransactionCustomer
                 await _customerRepository.CommitAsync();
                 return Results.Ok();
             }
+        }
+
+        public async Task<IResult> Handle(GetCustomerTransactionQuery request, CancellationToken cancellationToken)
+        {
+            var item = await _customerRepository.GetByIdAsync(request.Id, c => c.Transactions);
+            if (item is null) throw new Exception($"Couldn't find entity with id={request.Id}");
+            var queryable = await _transactionRepository
+                .FindAll(x => x.CustomerId.Equals(request.Id) && (string.IsNullOrEmpty(request.Query)
+                                                                  || EF.Functions.ILike(x.Note, $"%{request.Query}%"))
+                )
+                .OrderByDescending(x => x.CreatedDate).ToQueryResultAsync(request.Skip, request.Take);
+            var transactionsModels = new QueryResult<TransactionDto>
+            {
+                Count = queryable.Count,
+                Items = queryable.Items
+                    .Select(x => new TransactionDto(x.Id, x.TotalAmount, x.Note, x.ErrorMessage, x.BankAccount,
+                        x.CompletedDate, x.Response, x.PaymentGateway, x.Status))
+                    .ToList()
+            };
+            return Results.Ok(ResultModel<QueryResult<TransactionDto>>.Create(transactionsModels));
         }
     }
 }

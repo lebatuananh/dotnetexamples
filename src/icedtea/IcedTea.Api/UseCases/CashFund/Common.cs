@@ -4,7 +4,8 @@ using IcedTea.Domain.AggregateModel.TransactionAggregate;
 
 namespace IcedTea.Api.UseCases.CashFund;
 
-public record CashFundDto(Guid Id, string Name, decimal TotalAmount)
+public record CashFundDto(Guid Id, string Name, decimal TotalAmount, DateTimeOffset CreatedDate,
+    DateTimeOffset LastUpdatedDate)
 {
     public List<CashFundTransactionDto> CashFundTransactionDtos { set; get; }
     public List<TransactionDto> TransactionDtos { set; get; }
