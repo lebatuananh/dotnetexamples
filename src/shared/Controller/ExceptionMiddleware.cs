@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using Shared.Validator;
 
 namespace Shared.Controller;
@@ -32,17 +33,16 @@ public class ExceptionMiddleware
         }
     }
 
-    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
         if (exception is ValidationException validationException)
         {
             var validationErrorModel = ResultModel<string>.Create(validationException.ValidationResultModel
                     .Errors.Aggregate("", (a, b) => a + $"{b.Field}-{b.Message}\n"), true, "Validation Error.")
                 .ToString();
-
+            _logger.LogError($@"Result: {validationErrorModel}");
             await context.Response.WriteAsync(validationErrorModel);
         }
         else

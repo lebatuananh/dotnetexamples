@@ -38,8 +38,8 @@ app.UseSwaggerUI(c =>
 });
 app.MapFallback(() => Results.Redirect("/swagger"));
 app.UseEndpoint();
-await WithSeriLog(() =>
+await WithSeriLog(async () =>
 {
-    app.AutoInit().Run();
-    return ValueTask.CompletedTask;
+    await app.AutoInit(app.Logger);
+    app.Run();
 });

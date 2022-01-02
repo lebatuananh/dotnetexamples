@@ -2,9 +2,11 @@
 using System.Reflection;
 using IcedTea.Api.UseCases.CashFund;
 using IcedTea.Api.UseCases.Customer;
+using IcedTea.Api.UseCases.LogError;
 using IcedTea.Domain.AggregateModel.CashFundAggregate;
 using IcedTea.Domain.AggregateModel.CashFundTransactionAggregate;
 using IcedTea.Domain.AggregateModel.CustomerAggregate;
+using IcedTea.Domain.AggregateModel.LogErrorAggregate;
 using IcedTea.Domain.AggregateModel.TransactionAggregate;
 using IcedTea.Infrastructure;
 using IcedTea.Infrastructure.Repositories;
@@ -12,6 +14,8 @@ using IcedTead.Api;
 using IdentityModel;
 using IdentityModel.AspNetCore.AccessTokenValidation;
 using IdentityServer4.AccessTokenValidation;
+using Shared.Audit;
+using User.Api;
 
 namespace IcedTea.Api;
 
@@ -32,8 +36,37 @@ public static class Extension
             }).UseSnakeCaseNamingConvention();
             options.UseModel(MainDbContextModel.Instance);
         });
+
+        services.AddDbContext<AuditLogDbContext>(options =>
+        {
+            options.UseNpgsql(configuration.GetConnectionString(ConfigurationKeys.DefaultConnectionString), b =>
+            {
+                b.MigrationsAssembly(AssemblyName);
+                b.MigrationsHistoryTable("__EFMigrationsHistory", AuditLogDbContext.SchemaName);
+                b.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+            }).UseSnakeCaseNamingConvention();
+            options.UseModel(AuditLogDbContextModel.Instance);
+        });
+
+        services.AddDbContext<LogDbContext>(options =>
+        {
+            options.UseSqlServer(configuration.GetConnectionString(ConfigurationKeys.AdminLogDbConnection), b =>
+            {
+                b.MigrationsAssembly(AssemblyName);
+                b.MigrationsHistoryTable("__EFMigrationsHistory");
+                b.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+            });
+            options.UseModel(LogDbContextModel.Instance);
+        });
+
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<MainDbContext>());
         services.AddScoped<IScopeContext, ScopeContext>();
+        return services;
+    }
+
+    public static IServiceCollection AddApiClient(this IServiceCollection services)
+    {
+        services.AddUserApiClient();
         return services;
     }
 
@@ -43,6 +76,7 @@ public static class Extension
         services.AddScoped<ICashFundRepository, CashFundRepository>();
         services.AddScoped<ICashFundTransactionRepository, CashFundTransactionRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<ILogRepository, LogRepository>();
         return services;
     }
 
@@ -94,6 +128,13 @@ public static class Extension
         return services;
     }
 
+    public static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton(sp =>
+            configuration.GetSection("UserApi").Get<UserEndpointConfig>());
+        return services;
+    }
+
 
     public static IServiceCollection AddSwaggerConfig(this IServiceCollection services,
         IConfiguration configuration)
@@ -126,7 +167,6 @@ public static class Extension
                             {
                                 { "iced-tea-api", "iced-tea-api" },
                                 { "identity_admin_api", "identity_admin_api" },
-                                { "roles", "roles" }
                             }
                         }
                     }
@@ -149,6 +189,7 @@ public static class Extension
     {
         app.UseCustomerEndpoint();
         app.UseCashFundEndpoint();
+        app.UseLogErrorEndpoint();
         return app;
     }
 }

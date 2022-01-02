@@ -1,5 +1,7 @@
 ﻿using System.Linq.Expressions;
 using IcedTea.Domain.AggregateModel.CustomerAggregate;
+using User.Api;
+using User.Api.Models;
 using CustomerEntity = IcedTea.Domain.AggregateModel.CustomerAggregate.Customer;
 
 namespace IcedTea.Api.UseCases.Customer;
@@ -41,9 +43,13 @@ public struct MutateCustomer
     {
         public string Name { get; init; }
         public string UserName { get; init; }
+        public string Email { get; init; }
+        public string PhoneNumber { get; init; }
+        public string Password { get; init; }
+        public string ConfirmPassword { get; init; }
         public int Status { get; init; }
         public string DeviceId { get; init; }
-        public Guid ExternalId { get; init; }
+        public Guid ExternalId { get; set; }
 
         public CustomerEntity ToCustomerEntity()
         {
@@ -62,6 +68,16 @@ public struct MutateCustomer
                     .NotNull()
                     .NotEmpty()
                     .WithMessage("UserName is not empty");
+                RuleFor(x => x.Password)
+                    .NotEmpty()
+                    .NotNull()
+                    .WithMessage("Password is not empty");
+                RuleFor(x => x.ConfirmPassword)
+                    .NotEmpty()
+                    .NotNull()
+                    .WithMessage("ConfirmPassword is not empty");
+                RuleFor(customer => customer.Password)
+                    .Equal(customer => customer.ConfirmPassword).WithMessage("Password miss match");
             }
         }
     }
@@ -96,11 +112,13 @@ public struct MutateCustomer
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IScopeContext _scopeContext;
+        private readonly IUserApi _userApi;
 
-        public Handler(ICustomerRepository customerRepository, IScopeContext scopeContext)
+        public Handler(ICustomerRepository customerRepository, IScopeContext scopeContext, IUserApi userApi)
         {
             _customerRepository = customerRepository;
             _scopeContext = scopeContext;
+            _userApi = userApi;
         }
 
         public async Task<IResult> Handle(GetListCustomerQueries request, CancellationToken cancellationToken)
@@ -153,6 +171,17 @@ public struct MutateCustomer
 
         public async Task<IResult> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
+            var userId = Guid.NewGuid();
+            var user = await _userApi.RegisterUser(new ExternalUserRequest
+            {
+                Id = userId,
+                ConfirmPassword = request.ConfirmPassword,
+                Email = request.Email,
+                Password = request.Password,
+                PhoneNumber = request.PhoneNumber,
+                UserName = request.UserName
+            });
+            request.ExternalId = user.Id;
             var customerEntity = request.ToCustomerEntity();
             _customerRepository.Add(customerEntity);
             await _customerRepository.CommitAsync();

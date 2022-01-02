@@ -15,7 +15,7 @@ public class Customer : ModifierTrackingEntity, IAggregateRoot
     public virtual IList<Transaction> Transactions { get; private set; }
 
 
-    public Customer(string name, string userName, Guid externalId, int status, string deviceId)
+    public Customer( string name, string userName, Guid externalId, int status, string deviceId)
     {
         Name = name;
         UserName = userName;

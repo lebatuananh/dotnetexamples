@@ -1,31 +1,31 @@
 version: '3.4'
 
 services:
-#####################################
-# Postgres
-#####################################
+  #####################################
+  # Postgres
+  #####################################
   postgresql:
     container_name: postgres_example
     image: postgres:11
     environment:
       POSTGRES_PASSWORD: Mramra1234!@
     volumes:
-      - blog-data:/var/lib/postgresql/data
+      - netcorexamples-data:/var/lib/postgresql/data
     command: postgres -N 500
-
-#####################################
-# Blog Api
-#####################################
+  
+  #####################################
+  # Blog Api
+  #####################################
   netcorexamples.blogapi:
     container_name: netcorexamples_blogapi
     image: netcorexamples_blogapi
     build:
       context: .
-      dockerfile: src/blogs/Blog.Api/Dockerfile        
-
-#####################################
-# FileMangement
-#####################################
+      dockerfile: src/blogs/Blog.Api/Dockerfile
+  
+  #####################################
+  # FileMangement
+  #####################################
   netcorexamples.filemangement:
     container_name: netcorexamples_filemangement
     image: netcorexamples_filemangement
@@ -34,5 +34,5 @@ services:
       dockerfile: src/filemanagement/FileManagement/Dockerfile
 
 volumes:
-  blog-data:
+  netcorexamples-data:
     external: true    

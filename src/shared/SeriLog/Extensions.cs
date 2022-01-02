@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace Shared.SeriLog;
@@ -12,7 +13,8 @@ public static class Extensions
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .CreateBootstrapLogger();
-
+        Serilog.Debugging.SelfLog.Enable(Console.Error);
+        Log.Information("Start Application");
         try
         {
             await func.Invoke();
@@ -31,7 +33,6 @@ public static class Extensions
     public static void AddSerilog(this ConfigureHostBuilder hostBuilder, string appName)
     {
         hostBuilder.UseSerilog((ctx, lc) => lc
-            .WriteTo.Console()
             .Enrich.FromLogContext()
             .Enrich.WithProperty("Application", appName)
             .ReadFrom.Configuration(ctx.Configuration));

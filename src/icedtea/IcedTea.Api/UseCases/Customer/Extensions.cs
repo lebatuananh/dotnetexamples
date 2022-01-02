@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 
 namespace IcedTea.Api.UseCases.Customer;
 
@@ -104,6 +103,26 @@ public static class Extensions
                     await sender.Send(new MutateCustomer.GetCustomerQuery() { Id = id }))
             .Produces(200, typeof(ResultModel<CustomerDto>))
             .WithTags("Customer").ProducesProblem(404);
+
+        app.MapPost("api/v1/admin/customer/change-password",
+                [Authorize] async (InformationCustomer.ChangePasswordCommand command,
+                    ISender sender) => await sender.Send(command))
+            .Produces(200, typeof(IResult))
+            .WithTags("Customer").ProducesProblem(401);
+
+        app.MapPost("api/v1/admin/customer/change-password-user",
+                [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
+                async (InformationCustomer.ChangePasswordUserCommand command, ISender sender) =>
+                    await sender.Send(command))
+            .Produces(200, typeof(IResult))
+            .WithTags("Customer").ProducesProblem(401);
+
+        app.MapPost("api/v1/admin/customer/assign-role",
+                [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
+                async (InformationCustomer.AssignRoleCommand command, ISender sender) => await sender.Send(command))
+            .Produces(200, typeof(IResult))
+            .WithTags("Customer").ProducesProblem(401);
+
         return app;
     }
 }

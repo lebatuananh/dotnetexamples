@@ -16,11 +16,15 @@
         <Using Include="Shared.Repositories"/>
         <Using Include="Shared.Constants"/>
         <Using Include="Shared.Initialization"/>
-        <Using Include="Shared.SeriLog.Extensions" Static="true" />
         <Using Include="Shared.SeriLog"/>
+        <Using Include="Shared.SeriLog.Extensions" Static="true" />
         <Using Include="Shared.Controller"/>
         <Using Include="Shared"/>
         <Using Include="Shared.Identity"/>
+        <Using Include="Shared.Logging"/>
+        <Using Include="Shared.SeedWork"/>
+        <Using Include="Shared.HttpClient"/>
+        <Using Include="Shared.Validator"/>
         
         <Using Include="FluentValidation"/>
         <Using Include="MediatR"/>

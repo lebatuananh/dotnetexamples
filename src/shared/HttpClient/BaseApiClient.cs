@@ -29,8 +29,11 @@ public class BaseApiClient : IBaseApiClient
         client.BaseAddress = new Uri(baseApiUrl);
         if (requiredLogin)
         {
-            var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         var response = await client.GetAsync(url);
@@ -46,8 +49,11 @@ public class BaseApiClient : IBaseApiClient
         client.BaseAddress = new Uri(baseApiUrl);
         if (requiredLogin)
         {
-            var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         var response = await client.GetAsync(url);
@@ -64,8 +70,11 @@ public class BaseApiClient : IBaseApiClient
         client.BaseAddress = new Uri(baseApiUrl);
         if (requiredLogin)
         {
-            var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         var response = await client.PostAsync(url, null!);
@@ -92,8 +101,11 @@ public class BaseApiClient : IBaseApiClient
 
         if (requiredLogin)
         {
-            var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         var response = await client.PostAsync(url, httpContent);
@@ -123,8 +135,11 @@ public class BaseApiClient : IBaseApiClient
 
         if (requiredLogin)
         {
-            var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         var response = await client.PutAsync(url, httpContent);
@@ -154,8 +169,11 @@ public class BaseApiClient : IBaseApiClient
 
         if (requiredLogin)
         {
-            var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         var request = new HttpRequestMessage
@@ -181,8 +199,11 @@ public class BaseApiClient : IBaseApiClient
         client.BaseAddress = new Uri(baseApiUrl);
         if (requiredLogin)
         {
-            var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         var response = await client.DeleteAsync(url);

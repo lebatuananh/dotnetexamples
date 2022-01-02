@@ -8,6 +8,7 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\driver\User.Api\User.Api.csproj" />
         <ProjectReference Include="..\..\shared\Shared.csproj" />
         <ProjectReference Include="..\IcedTea.Infrastructure\IcedTea.Infrastructure.csproj" />
     </ItemGroup>
