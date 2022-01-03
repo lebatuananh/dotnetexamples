@@ -7,8 +7,8 @@ namespace IcedTea.Api.UseCases.CashFund;
 public record CashFundDto(Guid Id, string Name, decimal TotalAmount, DateTimeOffset CreatedDate,
     DateTimeOffset LastUpdatedDate)
 {
-    public List<CashFundTransactionDto> CashFundTransactionDtos { set; get; }
-    public List<TransactionDto> TransactionDtos { set; get; }
+    public List<CashFundTransactionDto> CashFundTransactionDtos { set; get; } = null!;
+    public List<TransactionDto> TransactionDtos { set; get; } = null!;
 
     public CashFundDto AssignTransaction(IList<CashFundTransaction> cashFundTransactions,
         IList<Transaction> transactions)
@@ -26,7 +26,6 @@ public record CashFundDto(Guid Id, string Name, decimal TotalAmount, DateTimeOff
             TransactionDtos = transactions.Select(x => new TransactionDto(x.Id, x.TotalAmount, x.Note, x.ErrorMessage,
                 x.BankAccount, x.CompletedDate, x.Response, x.PaymentGateway, x.Status)).ToList();
         }
-
 
         return this;
     }

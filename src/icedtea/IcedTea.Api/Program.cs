@@ -1,4 +1,6 @@
+using AuditLogging.EntityFramework.Entities;
 using IcedTea.Api;
+using Shared.Audit;
 
 await WithSeriLog(async () =>
 {
@@ -23,10 +25,10 @@ await WithSeriLog(async () =>
         .AddPersistence(builder.Configuration)
         .AddRepository()
         .AddConfig(builder.Configuration)
+        .AddAuditEventLogging<AuditLogDbContext, AuditLog>(builder.Configuration)
         .AddEndpointsApiExplorer()
         .AddInitializationStages()
-        .AddControllers()
-        .AddNewtonsoftJson();
+        .AddControllers();
     var app = builder.Build();
     // Configure the HTTP request pipeline.
     if (!app.Environment.IsDevelopment()) app.UseExceptionHandler("/Error");

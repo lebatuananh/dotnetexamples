@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using AuditLogging.Services;
 using IcedTea.Domain.AggregateModel.CustomerAggregate;
 using User.Api;
 using User.Api.Models;
@@ -113,12 +114,15 @@ public struct MutateCustomer
         private readonly ICustomerRepository _customerRepository;
         private readonly IScopeContext _scopeContext;
         private readonly IUserApi _userApi;
+        private readonly IAuditEventLogger _auditEventLogger;
 
-        public Handler(ICustomerRepository customerRepository, IScopeContext scopeContext, IUserApi userApi)
+        public Handler(ICustomerRepository customerRepository, IScopeContext scopeContext, IUserApi userApi,
+            IAuditEventLogger auditEventLogger)
         {
             _customerRepository = customerRepository;
             _scopeContext = scopeContext;
             _userApi = userApi;
+            _auditEventLogger = auditEventLogger;
         }
 
         public async Task<IResult> Handle(GetListCustomerQueries request, CancellationToken cancellationToken)
@@ -154,7 +158,7 @@ public struct MutateCustomer
                         .ToList()
                 };
             }
-
+            await _auditEventLogger.LogEventAsync(new ApiCustomerRequestEvent(customerModels));
             return Results.Ok(ResultModel<QueryResult<CustomerDto>>.Create(customerModels));
         }
 

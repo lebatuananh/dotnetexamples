@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
+using IcedTea.Api.UseCases.AuditLog;
 using IcedTea.Api.UseCases.CashFund;
 using IcedTea.Api.UseCases.Customer;
 using IcedTea.Api.UseCases.LogError;
@@ -26,6 +27,7 @@ public static class Extension
 
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
+        // TODO: MainDbContext
         services.AddDbContext<MainDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString(ConfigurationKeys.DefaultConnectionString), b =>
@@ -37,6 +39,7 @@ public static class Extension
             options.UseModel(MainDbContextModel.Instance);
         });
 
+        // TODO: AuditLogDbContext
         services.AddDbContext<AuditLogDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString(ConfigurationKeys.DefaultConnectionString), b =>
@@ -48,6 +51,7 @@ public static class Extension
             options.UseModel(AuditLogDbContextModel.Instance);
         });
 
+        // TODO: LogDbContext
         services.AddDbContext<LogDbContext>(options =>
         {
             options.UseSqlServer(configuration.GetConnectionString(ConfigurationKeys.AdminLogDbConnection), b =>
@@ -63,6 +67,7 @@ public static class Extension
         services.AddScoped<IScopeContext, ScopeContext>();
         return services;
     }
+
 
     public static IServiceCollection AddApiClient(this IServiceCollection services)
     {
@@ -190,6 +195,7 @@ public static class Extension
         app.UseCustomerEndpoint();
         app.UseCashFundEndpoint();
         app.UseLogErrorEndpoint();
+        app.UseAuditLogEndpoint();
         return app;
     }
 }

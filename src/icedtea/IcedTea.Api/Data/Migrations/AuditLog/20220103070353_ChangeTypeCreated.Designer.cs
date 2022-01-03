@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Shared.Audit;
@@ -11,9 +12,10 @@ using Shared.Audit;
 namespace IcedTea.Api.Data.Migrations.AuditLog
 {
     [DbContext(typeof(AuditLogDbContext))]
-    partial class AuditLogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220103070353_ChangeTypeCreated")]
+    partial class ChangeTypeCreated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

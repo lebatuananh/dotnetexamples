@@ -16,19 +16,14 @@ namespace AuditLogging.Helpers.JsonHelpers
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var property = base.CreateProperty(member, memberSerialization);
-            if (typeof(AuditEvent).IsAssignableFrom(member.DeclaringType) 
-                && (member.Name == nameof(AuditEvent.Category)
-                    || member.Name == nameof(AuditEvent.SubjectAdditionalData)
-                    || member.Name == nameof(AuditEvent.Action)
-                    || member.Name == nameof(AuditEvent.SubjectIdentifier)
-                    || member.Name == nameof(AuditEvent.SubjectType)
-                    || member.Name == nameof(AuditEvent.SubjectName)
-                    || member.Name == nameof(AuditEvent.Event)
-                    || member.Name == nameof(AuditEvent.Source)))
-            {
-                property.ShouldSerialize = i => false;
-                property.Ignored = true;
-            }
+            if (!typeof(AuditEvent).IsAssignableFrom(member.DeclaringType) ||
+                (member.Name != nameof(AuditEvent.Category) &&
+                 member.Name != nameof(AuditEvent.SubjectAdditionalData) && member.Name != nameof(AuditEvent.Action) &&
+                 member.Name != nameof(AuditEvent.SubjectIdentifier) && member.Name != nameof(AuditEvent.SubjectType) &&
+                 member.Name != nameof(AuditEvent.SubjectName) && member.Name != nameof(AuditEvent.Event) &&
+                 member.Name != nameof(AuditEvent.Source))) return property;
+            property.ShouldSerialize = i => false;
+            property.Ignored = true;
             return property;
         }
     }

@@ -23,7 +23,7 @@ namespace AuditLogging.EntityFramework.Entities
         /// Event category
         /// </summary>
         public string Category { get; set; }
-        
+
         /// <summary>
         /// Subject Identifier - who is responsible for current action
         /// </summary>
@@ -57,6 +57,6 @@ namespace AuditLogging.EntityFramework.Entities
         /// <summary>
         /// Date and time for creating of the event
         /// </summary>
-        public DateTime Created { get; set; } = DateTime.Now;
+        public DateTimeOffset Created { get; set; } = DateTimeOffset.UtcNow;
     }
 }

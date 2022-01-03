@@ -8,10 +8,6 @@ namespace AuditLogging.EntityFramework.Repositories
     where TAuditLog : AuditLog
     {
         Task SaveAsync(TAuditLog auditLog);
-
-        Task<PagedList<TAuditLog>> GetAsync(int page = 1, int pageSize = 10);
-
-        Task<PagedList<TAuditLog>> GetAsync(string subjectIdentifier, string subjectName, string category, int page = 1,
-            int pageSize = 10);
+        
     }
 }

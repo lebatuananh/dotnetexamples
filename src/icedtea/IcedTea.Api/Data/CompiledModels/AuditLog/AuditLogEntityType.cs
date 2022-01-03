@@ -47,7 +47,7 @@ namespace IcedTea.Api
 
             var created = runtimeEntityType.AddProperty(
                 "Created",
-                typeof(DateTime),
+                typeof(DateTimeOffset),
                 propertyInfo: typeof(AuditLog).GetProperty("Created", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(AuditLog).GetField("<Created>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             created.AddAnnotation("Relational:ColumnName", "created");

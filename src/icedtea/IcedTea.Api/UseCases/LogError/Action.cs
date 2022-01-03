@@ -22,14 +22,14 @@ public struct MutateLogError
         {
             var (skip, take, query) = request;
             var queryable = await _logRepository.GetLogsAsync(query, skip, take);
-            var customerModels = new QueryResult<LogErrorDto>
+            var logErrorModels = new QueryResult<LogErrorDto>
             {
                 Count = queryable.Count,
                 Items = queryable.Items
                     .Select(x => new LogErrorDto(x.Id, x.Message, x.Level, x.TimeStamp, x.LogEvent, x.Properties))
                     .ToList()
             };
-            return Results.Ok(ResultModel<QueryResult<LogErrorDto>>.Create(customerModels));
+            return Results.Ok(ResultModel<QueryResult<LogErrorDto>>.Create(logErrorModels));
         }
 
         public async Task<IResult> Handle(DeleteLogErrorCommand request, CancellationToken cancellationToken)

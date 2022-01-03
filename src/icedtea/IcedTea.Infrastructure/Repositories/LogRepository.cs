@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using IcedTea.Domain.AggregateModel.LogErrorAggregate;
 using Microsoft.EntityFrameworkCore;
+using Shared.Constants;
 using Shared.Repositories;
 
 namespace IcedTea.Infrastructure.Repositories;

@@ -25,3 +25,5 @@ public record WalletDto(decimal TotalAmount, decimal SubTotalAmount);
 
 public record TransactionDto(Guid Id, decimal TotalAmount, string Note, string ErrorMessage, string BankAccount,
     DateTimeOffset CompletedDate, string Response, PaymentGateway PaymentGateway, TransactionStatus Status);
+    
+    
