@@ -1,4 +1,5 @@
-﻿using IcedTea.Domain.AggregateModel.CustomerAggregate;
+﻿using AuditLogging.Services;
+using IcedTea.Domain.AggregateModel.CustomerAggregate;
 using User.Api;
 using User.Api.Models;
 
@@ -86,21 +87,30 @@ public struct InformationCustomer
         private readonly IUserApi _userApi;
         private readonly ICustomerRepository _customerRepository;
         private readonly IScopeContext _scopeContext;
+        private readonly IAuditEventLogger _auditEventLogger;
 
-        public Handler(IUserApi userApi, ICustomerRepository customerRepository, IScopeContext scopeContext)
+        public Handler(IUserApi userApi, ICustomerRepository customerRepository, IScopeContext scopeContext,
+            IAuditEventLogger auditEventLogger)
         {
             _userApi = userApi;
             _customerRepository = customerRepository;
             _scopeContext = scopeContext;
+            _auditEventLogger = auditEventLogger;
         }
 
         public async Task<IResult> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
+            var item = await _customerRepository.GetSingleAsync(
+                x => x.ExternalId.Equals(_scopeContext.CurrentAccountId));
+            if (item is null)
+                throw new Exception($"Couldn't find entity with externalId={_scopeContext.CurrentAccountId}");
             await _userApi.ChangePassword(new ChangePasswordRequest
             {
                 Password = request.Password,
                 ConfirmPassword = request.ConfirmPassword
             });
+            await _auditEventLogger.LogEventAsync(
+                new ApiChangePasswordRequestEvent(request.Password, request.ConfirmPassword));
             return Results.Ok();
         }
 
@@ -114,6 +124,8 @@ public struct InformationCustomer
                 ConfirmPassword = request.ConfirmPassword,
                 UserId = item.ExternalId
             });
+            await _auditEventLogger.LogEventAsync(
+                new ApiChangePasswordUserRequestEvent(request.Password, request.ConfirmPassword, request.Id));
             return Results.Ok();
         }
 
@@ -126,6 +138,7 @@ public struct InformationCustomer
                 RoleId = request.RoleId,
                 UserId = item.ExternalId
             });
+            await _auditEventLogger.LogEventAsync(new ApiAssignRoleRequestEvent(request.Id, request.RoleId));
             return Results.Ok();
         }
     }

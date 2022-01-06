@@ -19,7 +19,8 @@ namespace AuditLogging.Services
         protected readonly IAuditAction AuditAction;
         private readonly AuditLoggerOptions _auditLoggerOptions;
 
-        public AuditEventLogger(IEnumerable<IAuditEventLoggerSink> sinks, IAuditSubject auditSubject, IAuditAction auditAction, AuditLoggerOptions auditLoggerOptions)
+        public AuditEventLogger(IEnumerable<IAuditEventLoggerSink> sinks, IAuditSubject auditSubject,
+            IAuditAction auditAction, AuditLoggerOptions auditLoggerOptions)
         {
             Sinks = sinks;
             AuditSubject = auditSubject;
@@ -106,7 +107,8 @@ namespace AuditLogging.Services
         /// <param name="auditEvent"></param>
         /// <param name="loggerOptions"></param>
         /// <returns></returns>
-        public virtual async Task LogEventAsync(AuditEvent auditEvent, Action<AuditLoggerOptions> loggerOptions = default)
+        public virtual async Task LogEventAsync(AuditEvent auditEvent,
+            Action<AuditLoggerOptions> loggerOptions = default)
         {
             if (!_auditLoggerOptions.Enabled)
             {

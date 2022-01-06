@@ -1,4 +1,5 @@
-﻿using IcedTea.Domain.AggregateModel.CashFundAggregate;
+﻿using AuditLogging.Services;
+using IcedTea.Domain.AggregateModel.CashFundAggregate;
 using IcedTea.Domain.AggregateModel.CashFundTransactionAggregate;
 using IcedTea.Domain.AggregateModel.CustomerAggregate;
 using IcedTea.Domain.AggregateModel.TransactionAggregate;
@@ -104,13 +105,15 @@ public struct TransactionCustomer
         private readonly ICustomerRepository _customerRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICashFundRepository _cashFundRepository;
+        private readonly IAuditEventLogger _auditEventLogger;
 
         public Handler(ICustomerRepository customerRepository, ITransactionRepository transactionRepository,
-            ICashFundRepository cashFundRepository)
+            ICashFundRepository cashFundRepository, IAuditEventLogger auditEventLogger)
         {
             _customerRepository = customerRepository;
             _transactionRepository = transactionRepository;
             _cashFundRepository = cashFundRepository;
+            _auditEventLogger = auditEventLogger;
         }
 
         public async Task<IResult> Handle(CustomerDepositCommand request, CancellationToken cancellationToken)
@@ -121,6 +124,8 @@ public struct TransactionCustomer
             transaction.MarkCompleted();
             _transactionRepository.Add(transaction);
             await _customerRepository.CommitAsync();
+            await _auditEventLogger.LogEventAsync(new ApiDepositCustomerRequestEvent(request.Id, request.TotalAmount,
+                request.Note, request.BankAccount, request.PaymentGateway));
             return Results.Ok();
         }
 
@@ -135,6 +140,9 @@ public struct TransactionCustomer
             itemTransaction.MarkAccept();
             item.Deposit(itemTransaction.TotalAmount);
             await _customerRepository.CommitAsync();
+            await _auditEventLogger.LogEventAsync(
+                new ApiAcceptTransactionCustomerDepositRequestEvent(request.Id, request.TransactionId,
+                    itemTransaction));
             return Results.Ok();
         }
 
@@ -153,6 +161,9 @@ public struct TransactionCustomer
                 itemCashFund.Deposit(request.TotalAmount, cashFundTransaction);
                 item.Charge(request.TotalAmount);
                 await _customerRepository.CommitAsync();
+                await _auditEventLogger.LogEventAsync(
+                    new ApiCustomerDepositCashFundRequestEvent(request.Id, request.TotalAmount, request.Note,
+                        request.PaymentGateway, request.CashFundId, request.CustomerName));
                 return Results.Ok();
             }
         }
@@ -174,6 +185,8 @@ public struct TransactionCustomer
                         x.CompletedDate, x.Response, x.PaymentGateway, x.Status))
                     .ToList()
             };
+            await _auditEventLogger.LogEventAsync(new ApiListCustomerTransactionRequestEvent(request.Skip, request.Take,
+                request.Query, transactionsModels));
             return Results.Ok(ResultModel<QueryResult<TransactionDto>>.Create(transactionsModels));
         }
     }

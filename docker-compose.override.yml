@@ -1,37 +1,48 @@
 version: '3.4'
 
 services:
-
-#####################################
-# Postgres
-#####################################
+  
+  #####################################
+  # Postgres
+  #####################################
   postgresql:
     ports:
-      - 5436:5432  
+      - 5436:5432
     networks:
-      - netcore-example 
-
-#####################################
-# Blog Api
-#####################################
+      - netcore-example
+  
+  #####################################
+  # Blog Api
+  #####################################
   netcorexamples.blogapi:
     env_file:
-      - ./resources/env  
+      - ./resources/env
     ports:
       - "5400:80"
     networks:
       - netcore-example
-      
-#####################################
-# FileMangement
-#####################################
+  
+  #####################################
+  # FileManagement
+  #####################################
   netcorexamples.filemangement:
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
-        - "5401:80"
+      - "5401:80"
     networks:
-        - netcore-example      
+      - netcore-example
+  
+  #####################################
+  # Iced Tea
+  #####################################
+  netcorexamples.icedtea:
+    env_file:
+      - ./env/env.icedtea
+    ports:
+      - "5402:80"
+    networks:
+      - netcore-example
 
 networks:
   netcore-example:

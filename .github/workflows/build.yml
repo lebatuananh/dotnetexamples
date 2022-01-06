@@ -33,4 +33,18 @@ jobs:
     - name: build
       run: docker build . --file src/filemanagement/FileManagement/Dockerfile --tag lebatuananh/filemanagement
     - name: publish
-      run: docker push lebatuananh/filemanagement      
+      run: docker push lebatuananh/filemanagement   
+
+  build-iced-tea:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to registry
+        run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: build
+        run: docker build . --file src/icedtea/IcedTea.Api/Dockerfile --tag lebatuananh/netcoreexamplesicedtea
+      - name: publish
+        run: docker push lebatuananh/netcoreexamplesicedtea           

@@ -25,6 +25,7 @@
         <Using Include="Shared.SeedWork"/>
         <Using Include="Shared.HttpClient"/>
         <Using Include="Shared.Validator"/>
+        <Using Include="Shared.Algorithm" />
         
         <Using Include="FluentValidation"/>
         <Using Include="MediatR"/>

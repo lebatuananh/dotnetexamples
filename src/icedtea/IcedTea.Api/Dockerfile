@@ -5,10 +5,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["src/icedtea/IcedTea.Api/IcedTea.Api.csproj", "IcedTea.Api/"]
+COPY ["src/icedtea/IcedTea.Api/IcedTea.Api.csproj", "src/icedtea/IcedTea.Api/"]
 RUN dotnet restore "src/icedtea/IcedTea.Api/IcedTea.Api.csproj"
 COPY . .
-WORKDIR "/src/IcedTea.Api"
+WORKDIR "/src/src/icedtea/IcedTea.Api"
 RUN dotnet build "IcedTea.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish

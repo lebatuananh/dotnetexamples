@@ -158,7 +158,9 @@ public struct MutateCustomer
                         .ToList()
                 };
             }
-            await _auditEventLogger.LogEventAsync(new ApiCustomerRequestEvent(customerModels));
+
+            await _auditEventLogger.LogEventAsync(new ApiListCustomerRequestEvent(customerModels, request.Skip,
+                request.Take, request.Query));
             return Results.Ok(ResultModel<QueryResult<CustomerDto>>.Create(customerModels));
         }
 
@@ -170,6 +172,7 @@ public struct MutateCustomer
                 item.CreatedDate,
                 item.LastUpdatedDate, new WalletDto(item.Wallet.TotalAmount, item.Wallet.SubTotalAmount));
             result.AssignTransactions(item.Transactions);
+            await _auditEventLogger.LogEventAsync(new ApiCustomerRequestEvent(result));
             return Results.Ok(ResultModel<CustomerDto>.Create(result));
         }
 
@@ -189,6 +192,9 @@ public struct MutateCustomer
             var customerEntity = request.ToCustomerEntity();
             _customerRepository.Add(customerEntity);
             await _customerRepository.CommitAsync();
+            await _auditEventLogger.LogEventAsync(new ApiCreateCustomerRequestEvent(request.Name, request.UserName,
+                request.Email, request.PhoneNumber, request.Password, request.ConfirmPassword, request.Status,
+                request.DeviceId, request.ExternalId));
             return Results.Ok();
         }
 
@@ -200,6 +206,7 @@ public struct MutateCustomer
             item.Update(request.Name);
             _customerRepository.Update(item);
             await _customerRepository.CommitAsync();
+            await _auditEventLogger.LogEventAsync(new ApiUpdateCustomerRequestEvent(request.Id, request.Name));
             return Results.Ok();
         }
     }

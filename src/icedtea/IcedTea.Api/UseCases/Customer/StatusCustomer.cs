@@ -1,4 +1,5 @@
-﻿using IcedTea.Domain.AggregateModel.CustomerAggregate;
+﻿using AuditLogging.Services;
+using IcedTea.Domain.AggregateModel.CustomerAggregate;
 
 namespace IcedTea.Api.UseCases.Customer;
 
@@ -43,10 +44,12 @@ public struct StatusCustomer
         IRequestHandler<EnableCustomerCommand, IResult>
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly IAuditEventLogger _auditEventLogger;
 
-        public Handler(ICustomerRepository customerRepository)
+        public Handler(ICustomerRepository customerRepository, IAuditEventLogger auditEventLogger)
         {
             _customerRepository = customerRepository;
+            _auditEventLogger = auditEventLogger;
         }
 
         public async Task<IResult> Handle(DisableCustomerCommand request, CancellationToken cancellationToken)
@@ -57,6 +60,7 @@ public struct StatusCustomer
             item.Disable();
             _customerRepository.Update(item);
             await _customerRepository.CommitAsync();
+            await _auditEventLogger.LogEventAsync(new ApiDisableCustomerRequestEvent(request.Id, item));
             return Results.Ok();
         }
 
@@ -68,6 +72,7 @@ public struct StatusCustomer
             item.Enable();
             _customerRepository.Update(item);
             await _customerRepository.CommitAsync();
+            await _auditEventLogger.LogEventAsync(new ApiEnableCustomerRequestEvent(request.Id, item));
             return Results.Ok();
         }
     }

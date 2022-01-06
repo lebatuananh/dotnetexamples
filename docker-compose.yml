@@ -17,21 +17,31 @@ services:
   # Blog Api
   #####################################
   netcorexamples.blogapi:
-    container_name: netcorexamples_blogapi
+    container_name: netcorexamples.blogapi
     image: netcorexamples_blogapi
     build:
       context: .
       dockerfile: src/blogs/Blog.Api/Dockerfile
   
   #####################################
-  # FileMangement
+  # FileManagement
   #####################################
   netcorexamples.filemangement:
-    container_name: netcorexamples_filemangement
+    container_name: netcorexamples.filemangement
     image: netcorexamples_filemangement
     build:
       context: .
       dockerfile: src/filemanagement/FileManagement/Dockerfile
+  
+  #####################################
+  # Iced Tea
+  #####################################
+  netcorexamples.icedtea:
+    container_name: netcorexamples.icedtea
+    image: netcorexamples_icedtea
+    build:
+      context: .
+      dockerfile: src/icedtea/IcedTea.Api/Dockerfile
 
 volumes:
   netcorexamples-data:

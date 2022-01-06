@@ -1,4 +1,5 @@
-﻿using IcedTea.Domain.AggregateModel.CustomerAggregate;
+﻿using AuditLogging.Services;
+using IcedTea.Domain.AggregateModel.CustomerAggregate;
 
 namespace IcedTea.Api.UseCases.Customer;
 
@@ -23,10 +24,12 @@ public struct DeviceCustomer
     internal class Handler : IRequestHandler<UpdateDeviceCustomerCommand, IResult>
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly IAuditEventLogger _auditEventLogger;
 
-        public Handler(ICustomerRepository customerRepository)
+        public Handler(ICustomerRepository customerRepository, IAuditEventLogger auditEventLogger)
         {
             _customerRepository = customerRepository;
+            _auditEventLogger = auditEventLogger;
         }
 
         public async Task<IResult> Handle(UpdateDeviceCustomerCommand request, CancellationToken cancellationToken)
@@ -37,6 +40,8 @@ public struct DeviceCustomer
             item.UpdateDeviceId(request.DeviceId);
             _customerRepository.Update(item);
             await _customerRepository.CommitAsync();
+            await _auditEventLogger.LogEventAsync(
+                new ApiUpdateDeviceCustomerRequestEvent(request.Id, request.DeviceId));
             return Results.Ok();
         }
     }
