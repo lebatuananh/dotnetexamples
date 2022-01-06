@@ -1,4 +1,5 @@
-﻿using IcedTea.Domain.AggregateModel.CashFundAggregate;
+﻿using AuditLogging.Services;
+using IcedTea.Domain.AggregateModel.CashFundAggregate;
 using IcedTea.Domain.AggregateModel.CashFundTransactionAggregate;
 using IcedTea.Domain.AggregateModel.TransactionAggregate;
 
@@ -40,10 +41,12 @@ public struct TransactionCashFund
     internal class Handler : IRequestHandler<ChargeCashFundCommand, IResult>
     {
         private readonly ICashFundRepository _cashFundRepository;
+        private readonly IAuditEventLogger _auditEventLogger;
 
-        public Handler(ICashFundRepository cashFundRepository)
+        public Handler(ICashFundRepository cashFundRepository, IAuditEventLogger auditEventLogger)
         {
             _cashFundRepository = cashFundRepository;
+            _auditEventLogger = auditEventLogger;
         }
 
         public async Task<IResult> Handle(ChargeCashFundCommand request, CancellationToken cancellationToken)
@@ -57,6 +60,8 @@ public struct TransactionCashFund
             cashFundTransaction.MarkAccept();
             itemCashFund.Charge(request.TotalAmount, cashFundTransaction);
             await _cashFundRepository.CommitAsync();
+            await _auditEventLogger.LogEventAsync(new ApiChargeCashFundRequestEvent(request.Id, request.TotalAmount,
+                request.Note, request.PaymentGateway, request.CustomerName, itemCashFund));
             return Results.Ok();
         }
     }
