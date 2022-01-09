@@ -54,12 +54,12 @@ public static class Extension
         // TODO: LogDbContext
         services.AddDbContext<LogDbContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString(ConfigurationKeys.AdminLogDbConnection), b =>
+            options.UseNpgsql(configuration.GetConnectionString(ConfigurationKeys.DefaultConnectionString), b =>
             {
                 b.MigrationsAssembly(AssemblyName);
-                b.MigrationsHistoryTable("__EFMigrationsHistory");
+                b.MigrationsHistoryTable("__EFMigrationsHistory", LogDbContext.SchemaName);
                 b.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-            });
+            }).UseSnakeCaseNamingConvention();
             options.UseModel(LogDbContextModel.Instance);
         });
 

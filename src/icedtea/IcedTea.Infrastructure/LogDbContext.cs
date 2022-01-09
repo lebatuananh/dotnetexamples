@@ -10,6 +10,7 @@ public class LogDbContext : DbContext
     {
     }
 
+    public static string SchemaName => "icedtea";
     public DbSet<Log> Logs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -23,9 +24,10 @@ public class LogDbContext : DbContext
     {
         builder.Entity<Log>(log =>
         {
-            log.ToTable("Log");
+            log.ToTable("log", SchemaName);
             log.HasKey(x => x.Id);
-            log.Property(x => x.Level).HasMaxLength(128);
+            log.Property(x => x.LogEvent).HasColumnType("jsonb");
+            log.Property(x => x.Properties).HasColumnType("jsonb");
         });
     }
 }

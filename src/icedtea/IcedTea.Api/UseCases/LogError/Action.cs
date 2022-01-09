@@ -26,7 +26,8 @@ public struct MutateLogError
             {
                 Count = queryable.Count,
                 Items = queryable.Items
-                    .Select(x => new LogErrorDto(x.Id, x.Message, x.Level, x.TimeStamp, x.LogEvent, x.Properties))
+                    .Select(x => new LogErrorDto(x.Id, x.Message, x.Level, x.TimeStamp, x.LogEvent,
+                        x.Properties))
                     .ToList()
             };
             return Results.Ok(ResultModel<QueryResult<LogErrorDto>>.Create(logErrorModels));

@@ -3,7 +3,7 @@
     "Using": [
       "Serilog.Sinks.Console",
       "Serilog.Sinks.File",
-      "Serilog.Sinks.MSSqlServer"
+      "Serilog.Sinks.Postgresql.Alternative"
     ],
     "MinimumLevel": {
       "Default": "Error",
@@ -24,25 +24,24 @@
         }
       },
       {
-        "Name": "MSSqlServer",
+        "Name": "PostgreSQL",
         "Args": {
-          "connectionString": "Server=.;Database=ErrorLogs;User Id=sa;Password=P@assW0rd",
-          "restrictedToMinimumLevel": "Error",
-          "sinkOptionsSection": {
-            "tableName": "Log",
-            "schemaName": "dbo",
-            "autoCreateSqlTable": false,
-            "batchPostingLimit": 1000,
-            "period": "0.00:00:30"
+          "connectionString": "Server=localhost;Port=5436;Database=netcore_example;User Id=postgres;Password=Mramra1234!@;",
+          "tableName": "log",
+          "schemaName": "icedtea",
+          "loggerColumnOptions": {
+            "id": "IdAutoIncrement",
+            "time_stamp": "Timestamp",
+            "log_event": "LogEvent",
+            "level": "LevelAsText",
+            "properties": "Properties",
+            "message": "Message",
+            "message_template": "RenderedMessage",
+            "exception": "Exception"
           },
-          "columnOptionsSection": {
-            "addStandardColumns": [
-              "LogEvent"
-            ],
-            "removeStandardColumns": [
-              "Properties"
-            ]
-          }
+          "restrictedToMinimumLevel": "Error",
+          "period": "0.00:00:30",
+          "batchSizeLimit": 50
         }
       }
     ]

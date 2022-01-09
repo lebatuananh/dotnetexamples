@@ -21,6 +21,4 @@ public class Log : IAggregateRoot
     public string LogEvent { get; set; }
 
     public string? Properties { get; set; }
-
-    [NotMapped] public XElement PropertiesXml => XElement.Parse(Properties);
 }

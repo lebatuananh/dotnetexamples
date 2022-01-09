@@ -1,0 +1,51 @@
+{
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.File",
+      "Serilog.Sinks.MSSqlServer"
+    ],
+    "MinimumLevel": {
+      "Default": "Error",
+      "Override": {
+        "Microsoft": "Information",
+        "System": "Information"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "Log/mra_admin.txt",
+          "rollingInterval": "Day"
+        }
+      },
+      {
+        "Name": "MSSqlServer",
+        "Args": {
+          "connectionString": "Server=.;Database=ErrorLogs;User Id=sa;Password=P@assW0rd",
+          "restrictedToMinimumLevel": "Error",
+          "sinkOptionsSection": {
+            "tableName": "Log",
+            "schemaName": "dbo",
+            "autoCreateSqlTable": false,
+            "batchPostingLimit": 1000,
+            "period": "0.00:00:30"
+          },
+          "columnOptionsSection": {
+            "addStandardColumns": [
+              "LogEvent"
+            ],
+            "removeStandardColumns": [
+              "Properties"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "AllowedHosts": "*"
+}

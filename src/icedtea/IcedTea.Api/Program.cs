@@ -30,6 +30,10 @@ await WithSeriLog(async () =>
         .AddInitializationStages()
         .AddControllers();
     var app = builder.Build();
+    
+    // TODO: https://github.com/npgsql/efcore.pg/issues/2158
+    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    
     // Configure the HTTP request pipeline.
     if (!app.Environment.IsDevelopment()) app.UseExceptionHandler("/Error");
     app.MapGet("/error", () => Results.Problem("An error occurred.", statusCode: 500))

@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using IcedTea.Domain.AggregateModel.LogErrorAggregate;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable 219, 612, 618
 #nullable enable
@@ -25,7 +26,8 @@ namespace IcedTea.Api
                 fieldInfo: typeof(Log).GetField("<Id>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw);
-            id.AddAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+            id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+            id.AddAnnotation("Relational:ColumnName", "id");
 
             var exception = runtimeEntityType.AddProperty(
                 "Exception",
@@ -33,36 +35,36 @@ namespace IcedTea.Api
                 propertyInfo: typeof(Log).GetProperty("Exception", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Log).GetField("<Exception>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            exception.AddAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.None);
+            exception.AddAnnotation("Relational:ColumnName", "exception");
 
             var level = runtimeEntityType.AddProperty(
                 "Level",
                 typeof(string),
                 propertyInfo: typeof(Log).GetProperty("Level", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(Log).GetField("<Level>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                maxLength: 128);
-            level.AddAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.None);
+                fieldInfo: typeof(Log).GetField("<Level>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            level.AddAnnotation("Relational:ColumnName", "level");
 
             var logEvent = runtimeEntityType.AddProperty(
                 "LogEvent",
                 typeof(string),
                 propertyInfo: typeof(Log).GetProperty("LogEvent", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Log).GetField("<LogEvent>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            logEvent.AddAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.None);
+            logEvent.AddAnnotation("Relational:ColumnName", "log_event");
+            logEvent.AddAnnotation("Relational:ColumnType", "jsonb");
 
             var message = runtimeEntityType.AddProperty(
                 "Message",
                 typeof(string),
                 propertyInfo: typeof(Log).GetProperty("Message", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Log).GetField("<Message>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            message.AddAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.None);
+            message.AddAnnotation("Relational:ColumnName", "message");
 
             var messageTemplate = runtimeEntityType.AddProperty(
                 "MessageTemplate",
                 typeof(string),
                 propertyInfo: typeof(Log).GetProperty("MessageTemplate", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Log).GetField("<MessageTemplate>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            messageTemplate.AddAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.None);
+            messageTemplate.AddAnnotation("Relational:ColumnName", "message_template");
 
             var properties = runtimeEntityType.AddProperty(
                 "Properties",
@@ -70,18 +72,20 @@ namespace IcedTea.Api
                 propertyInfo: typeof(Log).GetProperty("Properties", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Log).GetField("<Properties>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            properties.AddAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.None);
+            properties.AddAnnotation("Relational:ColumnName", "properties");
+            properties.AddAnnotation("Relational:ColumnType", "jsonb");
 
             var timeStamp = runtimeEntityType.AddProperty(
                 "TimeStamp",
                 typeof(DateTimeOffset),
                 propertyInfo: typeof(Log).GetProperty("TimeStamp", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Log).GetField("<TimeStamp>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-            timeStamp.AddAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.None);
+            timeStamp.AddAnnotation("Relational:ColumnName", "time_stamp");
 
             var key = runtimeEntityType.AddKey(
                 new[] { id });
             runtimeEntityType.SetPrimaryKey(key);
+            key.AddAnnotation("Relational:Name", "pk_log");
 
             return runtimeEntityType;
         }
@@ -89,9 +93,9 @@ namespace IcedTea.Api
         public static void CreateAnnotations(RuntimeEntityType runtimeEntityType)
         {
             runtimeEntityType.AddAnnotation("Relational:FunctionName", null);
-            runtimeEntityType.AddAnnotation("Relational:Schema", null);
+            runtimeEntityType.AddAnnotation("Relational:Schema", "icedtea");
             runtimeEntityType.AddAnnotation("Relational:SqlQuery", null);
-            runtimeEntityType.AddAnnotation("Relational:TableName", "Log");
+            runtimeEntityType.AddAnnotation("Relational:TableName", "log");
             runtimeEntityType.AddAnnotation("Relational:ViewName", null);
             runtimeEntityType.AddAnnotation("Relational:ViewSchema", null);
 

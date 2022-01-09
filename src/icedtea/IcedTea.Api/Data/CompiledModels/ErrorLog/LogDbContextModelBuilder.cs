@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable 219, 612, 618
 #nullable enable
@@ -16,9 +17,9 @@ namespace IcedTea.Api
 
             LogEntityType.CreateAnnotations(log);
 
-            AddAnnotation("ProductVersion", "6.0.0");
-            AddAnnotation("Relational:MaxIdentifierLength", 128);
-            AddAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+            AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+            AddAnnotation("ProductVersion", "6.0.1");
+            AddAnnotation("Relational:MaxIdentifierLength", 63);
         }
     }
 }
