@@ -170,7 +170,7 @@ public static class Extension
                             TokenUrl = new Uri($"{settings.Authority}/connect/token"),
                             Scopes = new Dictionary<string, string>
                             {
-                                { "iced-tea-api", "iced-tea-api" },
+                                { "iced_tea_api", "iced_tea_api" },
                                 { "identity_admin_api", "identity_admin_api" },
                             }
                         }

@@ -1,3 +1,4 @@
+using AuditLogging.Services;
 using Shared.Audit.Repository;
 using AuditLogEntity = AuditLogging.EntityFramework.Entities.AuditLog;
 
@@ -14,10 +15,12 @@ public struct MutateAuditLog
         IRequestHandler<DeleteAuditLogCommand, IResult>
     {
         private readonly IAuditLogRepository<AuditLogEntity> _auditLogRepository;
+        private readonly IAuditEventLogger _auditEventLogger;
 
-        public Handler(IAuditLogRepository<AuditLogEntity> auditLogRepository)
+        public Handler(IAuditLogRepository<AuditLogEntity> auditLogRepository, IAuditEventLogger auditEventLogger)
         {
             _auditLogRepository = auditLogRepository;
+            _auditEventLogger = auditEventLogger;
         }
 
         public async Task<IResult> Handle(GetListAuditLogQueries request, CancellationToken cancellationToken)
@@ -34,6 +37,9 @@ public struct MutateAuditLog
                         x.SubjectName, x.SubjectType, x.SubjectAdditionalData, x.Action, x.Created))
                     .ToList()
             };
+            await _auditEventLogger.LogEventAsync(new ApiListAuditLogRequestEvent(request.Event, request.Source,
+                request.Category, request.SubjectIdentifier, request.SubjectName, request.Created, request.Skip,
+                request.Take, logErrorModels));
             return Results.Ok(ResultModel<QueryResult<AuditLogDto>>.Create(logErrorModels));
         }
 

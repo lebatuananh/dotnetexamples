@@ -1,6 +1,6 @@
 ﻿{
   "UserApi": {
-    "BaseUrl": "https://api-id.programersgang.tech",
+    "BaseUrl": "https://apiid.programersgang.tech",
     "ClientName": "IcedTeaClient",
     "ExternalUser": "/api/ExternalUser",
     "ChangePassword": "/api/ExternalUser/ChangePassword",
