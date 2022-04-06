@@ -1,5 +1,6 @@
 using IcedTea.Infrastructure;
 using Shared.Audit;
+using Shared.Logging.LogError;
 
 namespace IcedTea.Api.Initialization;
 

@@ -81,7 +81,8 @@ public struct MutateCashFund
         }
     }
 
-    internal class Handler : IRequestHandler<GetListCashFundQueries, IResult>,
+    internal class Handler : 
+        IRequestHandler<GetListCashFundQueries, IResult>,
         IRequestHandler<GetCashFundQuery, IResult>,
         IRequestHandler<CreateCashFundCommand, IResult>,
         IRequestHandler<UpdateCashFundCommand, IResult>

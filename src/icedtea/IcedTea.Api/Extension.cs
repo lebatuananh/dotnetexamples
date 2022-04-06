@@ -7,15 +7,14 @@ using IcedTea.Api.UseCases.LogError;
 using IcedTea.Domain.AggregateModel.CashFundAggregate;
 using IcedTea.Domain.AggregateModel.CashFundTransactionAggregate;
 using IcedTea.Domain.AggregateModel.CustomerAggregate;
-using IcedTea.Domain.AggregateModel.LogErrorAggregate;
 using IcedTea.Domain.AggregateModel.TransactionAggregate;
 using IcedTea.Infrastructure;
 using IcedTea.Infrastructure.Repositories;
-using IcedTead.Api;
 using IdentityModel;
 using IdentityModel.AspNetCore.AccessTokenValidation;
 using IdentityServer4.AccessTokenValidation;
 using Shared.Audit;
+using Shared.Logging.LogError;
 using User.Api;
 
 namespace IcedTea.Api;
@@ -36,7 +35,7 @@ public static class Extension
                 b.MigrationsHistoryTable("__EFMigrationsHistory", MainDbContext.SchemaName);
                 b.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             }).UseSnakeCaseNamingConvention();
-            options.UseModel(MainDbContextModel.Instance);
+            // options.UseModel(MainDbContextModel.Instance);
         });
 
         // TODO: AuditLogDbContext
@@ -48,7 +47,7 @@ public static class Extension
                 b.MigrationsHistoryTable("__EFMigrationsHistory", AuditLogDbContext.SchemaName);
                 b.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             }).UseSnakeCaseNamingConvention();
-            options.UseModel(AuditLogDbContextModel.Instance);
+            // options.UseModel(AuditLogDbContextModel.Instance);
         });
 
         // TODO: LogDbContext
@@ -60,7 +59,7 @@ public static class Extension
                 b.MigrationsHistoryTable("__EFMigrationsHistory", LogDbContext.SchemaName);
                 b.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             }).UseSnakeCaseNamingConvention();
-            options.UseModel(LogDbContextModel.Instance);
+            // options.UseModel(LogDbContextModel.Instance);
         });
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<MainDbContext>());

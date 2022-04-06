@@ -1,4 +1,4 @@
-﻿using IcedTea.Domain.AggregateModel.LogErrorAggregate;
+﻿using Shared.Logging.LogError;
 
 namespace IcedTea.Api.UseCases.LogError;
 

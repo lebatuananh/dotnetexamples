@@ -31,7 +31,7 @@ await WithSeriLog(async () =>
         .AddControllers();
     var app = builder.Build();
     
-    // TODO: https://github.com/npgsql/efcore.pg/issues/2158
+    // https://github.com/npgsql/efcore.pg/issues/2158
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     
     // Configure the HTTP request pipeline.

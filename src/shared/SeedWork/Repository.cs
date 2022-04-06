@@ -11,7 +11,7 @@ namespace Shared.SeedWork;
 public abstract class Repository<T, TDbContext> : IRepository<T>
     where T : Entity, IAggregateRoot where TDbContext : BaseDbContext
 {
-    protected Repository(TDbContext dbContext)
+    public Repository(TDbContext dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentException(nameof(dbContext));
     }

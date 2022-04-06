@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AuditLogging.EntityFramework.DbContexts;
 using AuditLogging.EntityFramework.Entities;
 using Microsoft.EntityFrameworkCore;

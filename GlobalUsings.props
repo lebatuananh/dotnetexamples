@@ -1,4 +1,4 @@
-<Project>
+    <Project>
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0">
             <PrivateAssets>all</PrivateAssets>
@@ -26,6 +26,8 @@
         <Using Include="Shared.HttpClient"/>
         <Using Include="Shared.Validator"/>
         <Using Include="Shared.Algorithm" />
+        <Using Include="Shared.Logging.LogError" />
+        <Using Include="Shared.Audit" />
         
         <Using Include="FluentValidation"/>
         <Using Include="MediatR"/>

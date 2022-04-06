@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\github\GithubTrending.Domain\GithubTrending.Domain.csproj" />
+    <ProjectReference Include="..\..\shared\Shared.csproj" />
+    <ProjectReference Include="..\DotnetCrawler.Data\DotnetCrawler.Data.csproj" />
+  </ItemGroup>
+
+</Project>

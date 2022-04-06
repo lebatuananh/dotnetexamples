@@ -1,0 +1,10 @@
+dotnet ef migrations add InitialErrorLog -c LogDbContext -o Data/Migrations/ErrorLog
+dotnet ef dbcontext optimize -c LogDbContext -o Data/CompiledModels/ErrorLog -n GithubTrending.Api --verbose
+
+
+dotnet ef migrations add InitialGithubTrending -c MainDbContext -o Data/Migrations/GithubTrending
+dotnet ef dbcontext optimize -c MainDbContext -o Data/CompiledModels/GithubTrending -n GithubTrending.Api --verbose
+
+
+dotnet ef migrations add InitialAuditLog -c AuditLogDbContext -o Data/Migrations/AuditLog
+dotnet ef dbcontext optimize -c AuditLogDbContext -o Data/CompiledModels/AuditLog -n GithubTrending.Api --verbose

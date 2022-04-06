@@ -24,12 +24,12 @@ public static class Extension
             .AddEventData<ApiAuditSubject, ApiAuditAction>()
             .AddAuditSinks<DatabaseAuditEventLoggerSink<TAuditLog>>();
 
-        // TODO: Repository Save Change Database (use nuget package)
+        // Repository Save Change Database (use nuget package)
         services
             .AddTransient<IAuditLoggingRepository<TAuditLog>,
                 AuditLoggingRepository<TAuditLoggingDbContext, TAuditLog>>();
 
-        // TODO: Repository for user interface
+        // Repository for user interface
         services.AddTransient<IAuditLogRepository<TAuditLog>, AuditLogRepository<TAuditLoggingDbContext, TAuditLog>>();
 
         return services;

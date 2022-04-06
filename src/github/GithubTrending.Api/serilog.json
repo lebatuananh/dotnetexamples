@@ -1,0 +1,50 @@
+{
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.File",
+      "Serilog.Sinks.Postgresql.Alternative"
+    ],
+    "MinimumLevel": {
+      "Default": "Error",
+      "Override": {
+        "Microsoft": "Information",
+        "System": "Information"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "Log/mra_admin.txt",
+          "rollingInterval": "Day"
+        }
+      },
+      {
+        "Name": "PostgreSQL",
+        "Args": {
+          "connectionString": "Server=my.netcoreexamples.com;Port=5432;Database=github;User Id=admin;Password=Mramra1234!@;",
+          "tableName": "log",
+          "schemaName": "error_log",
+          "loggerColumnOptions": {
+            "id": "IdAutoIncrement",
+            "time_stamp": "Timestamp",
+            "log_event": "LogEvent",
+            "level": "LevelAsText",
+            "properties": "Properties",
+            "message": "Message",
+            "message_template": "RenderedMessage",
+            "exception": "Exception"
+          },
+          "restrictedToMinimumLevel": "Error",
+          "period": "0.00:00:30",
+          "batchSizeLimit": 50
+        }
+      }
+    ]
+  },
+  "AllowedHosts": "*"
+}

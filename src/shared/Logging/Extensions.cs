@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Configuration;
 using Serilog.Formatting.Elasticsearch;
+using Shared.Logging.LogError;
+using Log = Serilog.Log;
 
 namespace Shared.Logging;
 
